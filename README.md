@@ -6,7 +6,7 @@ Start by executing the [C++ project](serverApp/).\
 Keep the command line open!
 ### 2. Start the Supervisor Program
 (Recommended to use VS Code)
-1. Run the task - (Ensure that the program is present in `C:\si\` for the task to run properly)\
+1. Run the task - (Ensure that the program is present in `C:\si\` for the task to run properly)
 
 or 
  
