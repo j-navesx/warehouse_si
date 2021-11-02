@@ -11,7 +11,7 @@ or
 - Execute externaly - `swipl ./kbServer/warehouse_config.pl ./kbServer/warehouse_dispatcher.pl ./kbServer/warehouse_monitoring.pl ./kbServer/warehouse_supervisor.pl` (etc...)
 - Run the command on the prolog repl: `server(8082).`
 ### 3. Open the Simulator
-Go to <hhtp://localhost:8081/ss_multi_parts.html>
+Go to <http://localhost:8081/ss_multi_parts.html>
 ### Run the Commands you want!
 #### Examples:
 - (TO DO)
