@@ -179,3 +179,79 @@ defrule([name: stop_right_station_rule],
 
 %cenas novas wow
 
+defrule([name: wait_until_rule],
+    if plan(Ref,[wait_until(Condition)|ListOfActions]) and Condition  then[
+       retract(plan(Ref,[wait_until(Condition)|ListOfActions])),
+       assert(plan(Ref,ListOfActions)),
+       log_format('wait_for: ~w, plan: ~w~n',[Condition, Ref])
+    ]
+).
+
+defrule([name: wait_for_all_rule],
+    if plan(Ref,[wait_for_all([Cond|Conditions])|ListOfActions]) and Cond  then[
+       retract( plan(Ref,[wait_for_all([Cond|Conditions])|ListOfActions])  ),
+       assert(  plan(Ref,[wait_for_all(      Conditions )|ListOfActions])  ),
+       log_format('wait_for: ~w, plan: ~w~n',[Cond, Ref])                                                        ]
+).
+
+defrule([name: wait_for_all_rule_empty_cond],
+    if plan(Ref,[wait_for_all([])|ListOfActions])   then[
+       retract( plan(Ref,[wait_for_all([])|ListOfActions])  ),
+       assert(  plan(Ref,ListOfActions)  )
+    ]
+).
+
+
+defrule([name: run_plan_for_actions],
+    if plan(Ref,[Action|ListOfActions]) and (Action\=wait_until(_))
+        and (Action\=wait_for_all(_)) and (Action\=parallel(_,_)) then [
+       retract(plan(Ref,[Action|ListOfActions])),
+       assert(plan(Ref,ListOfActions)),
+       assert(Action),
+       log_format('action: ~w, plan: ~w~n',[Action, Ref])
+    ]
+).
+
+defrule([name: empty_plan_rule],
+    if plan(Ref,[])  then [                          %retract finished/empty
+       retract(plan(Ref,[])),                        %plans
+       log_format('finished_plan:  ~w~n',[Ref])
+    ]
+).
+
+defrule([name:subplan_rule],
+    if plan(Ref_parent,[subplan(Ref_child,List_action) | Plan]) then [
+       retract( plan(Ref_parent,[subplan(Ref_child,List_action) | Plan]) ),
+       assert(plan(Ref_parent,Plan)),
+       assert(plan(Ref_child,List_action)),
+       log_format('new_plan: ~w of plan: ~w~n',[Ref_child, Ref_parent])
+    ]
+).
+
+/*
+defrule([name: plan_with_actions_rule],
+    if plan(Ref,[Action|ListOfActions])
+           and (Action\=wait_until(_)) then [       %get an action
+       retract(plan(Ref,[Action|ListOfActions])),    %retract and assert
+       assert(plan(Ref,ListOfActions)),              %remaining plan
+       assert(Action),
+       log_format('action: ~w, plan: ~w~n',[Action, Ref])
+    ]
+).
+
+defrule([name: empty_plan_rule],
+    if plan(Ref,[])  then [                          %retract finished/empty
+       retract(plan(Ref,[])),                        %plans
+       log_format('finished_plan:  ~w~n',[Ref])
+    ]
+).
+
+defrule([name: wait_until_rule],
+    if plan(Ref,[wait_until(Condition)|ListOfActions])
+         and Condition  then[
+       retract(plan(Ref,[wait_until(Condition)|ListOfActions])),
+       assert(plan(Ref,ListOfActions)),
+       log_format('wait_for: ~w, plan: ~w~n',[Condition, Ref])
+    ]
+).
+*/
