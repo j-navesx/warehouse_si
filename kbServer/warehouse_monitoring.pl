@@ -163,14 +163,14 @@ defrule([name: part_in_cage_rule],
 defrule([name: left_station_moving_in_rule],
     if port_value(4, Byte_val)  and (  1 is getbit(Byte_val, 7) )
     then (
-       assert(left_station_moving("Left Station Moving In"))
+       assert(left_station_moving("Left Station Moving In."))
     )
  ).
 
 defrule([name: left_station_moving_out_rule],
     if port_value(5, Byte_val)  and (  1 is getbit(Byte_val, 0) )
     then (
-       assert(left_station_moving("Left Station Moving Out"))
+       assert(left_station_moving("Left Station Moving Out."))
     )
  ).
 
@@ -196,14 +196,14 @@ defrule([name: part_left_station_rule],
 defrule([name: right_station_moving_in_rule],
     if port_value(5, Byte_val)  and (  1 is getbit(Byte_val, 1) )
     then (
-       assert(right_station_moving("Right Station Moving In"))
+       assert(right_station_moving("Right Station Moving In."))
     )
  ).
 
 defrule([name: right_station_moving_out_rule],
     if port_value(5, Byte_val)  and (  1 is getbit(Byte_val, 2) )
     then (
-       assert(right_station_moving("Right Station Moving Out"))
+       assert(right_station_moving("Right Station Moving Out."))
     )
  ).
 
