@@ -2,7 +2,7 @@
 A program made in `Prolog` and `C++` with a simulator provided by the teaching staff
 ## Run the project
 ### 1. Running the simulator
-Start by executing the [C++ project](serverApp/).
+Start by executing the [C++ project](serverApp/). (space, space, Enter)
 Keep the command line open!
 ### 2. Start the Supervisor Program
 (Recommended to use VS Code)
@@ -12,6 +12,6 @@ or
 - Run the command on the prolog repl: `server(8082).`
 ### 3. Open the Simulator
 Go to <http://localhost:8081/ss_multi_parts.html>
-### Run the Commands you want!
+## Run the Commands you want!
 #### Examples:
 - (TO DO)
