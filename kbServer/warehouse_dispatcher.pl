@@ -175,3 +175,7 @@ defrule([name: stop_right_station_rule],
        retract(stop_right_station)
     )
  ).
+
+
+%cenas novas wow
+

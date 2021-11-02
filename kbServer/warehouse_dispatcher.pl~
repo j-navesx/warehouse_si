@@ -2,6 +2,10 @@
 :-ensure_loaded(warehouse_config).
 :-dynamic x_moving/1.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                      X MOVEMENT                      %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % move_x_right, port=4, bit(0)=1, bit(1)=0
 defrule([name: move_x_right_rule],
     if  move_x_right
@@ -9,12 +13,10 @@ defrule([name: move_x_right_rule],
        set_bit_value(4, 0, 1),
        set_bit_value(4, 1, 0),
        retract(move_x_right)
-       %assert(x_moving(1)),
-       %retract(x_moving(_))
     )
  ).
 
-% move_x_right, port=4, bit(0)=0, bit(1)=1
+% move_x_left, port=4, bit(0)=0, bit(1)=1
 defrule([name: move_x_left_rule],
     if  move_x_left
     then (
@@ -25,7 +27,7 @@ defrule([name: move_x_left_rule],
  ).
 
 
-% move_x_right, port=4, bit(0)=0, bit(1)=1
+% stop_x, port=4, bit(0)=0, bit(1)=0
 defrule([name: stop_x_rule],
     if  stop_x
     then (
@@ -35,8 +37,11 @@ defrule([name: stop_x_rule],
     )
  ).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                      Y MOVEMENT                      %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% move_x_right, port=4, bit(0)=1, bit(1)=0
+% move_y_in, port=4, bit(3)=0, bit(4)=1
 defrule([name: move_y_in_rule],
     if  move_y_in
     then (
@@ -46,7 +51,7 @@ defrule([name: move_y_in_rule],
     )
  ).
 
-% move_x_right, port=4, bit(0)=0, bit(1)=1
+% move_y_out, port=4, bit(3)=1, bit(4)=0
 defrule([name: move_y_out_rule],
     if  move_y_out
     then (
@@ -57,7 +62,7 @@ defrule([name: move_y_out_rule],
  ).
 
 
-% move_x_right, port=4, bit(0)=0, bit(1)=1
+% stop_y, port=4, bit(3)=0, bit(4)=0
 defrule([name: stop_y_rule],
     if  stop_y
     then (
@@ -67,7 +72,11 @@ defrule([name: stop_y_rule],
     )
  ).
 
-% move_x_right, port=4, bit(0)=1, bit(1)=0
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                      Z MOVEMENT                      %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% move_z_up, port=4, bit(5)=1, bit(6)=0
 defrule([name: move_z_up_rule],
     if  move_z_up
     then (
@@ -77,7 +86,7 @@ defrule([name: move_z_up_rule],
     )
  ).
 
-% move_x_right, port=4, bit(0)=0, bit(1)=1
+% move_z_down, port=4, bit(5)=0, bit(6)=1
 defrule([name: move_z_down_rule],
     if  move_z_down
     then (
@@ -88,7 +97,7 @@ defrule([name: move_z_down_rule],
  ).
 
 
-% move_x_right, port=4, bit(0)=0, bit(1)=1
+% stop_z, port=4, bit(5)=0, bit(6)=0
 defrule([name: stop_z_rule],
     if  stop_z
     then (
@@ -98,8 +107,11 @@ defrule([name: stop_z_rule],
     )
  ).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                 LEFT STATION MOVEMENT                %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% move_x_right, port=4, bit(0)=1, bit(1)=0
+% move_left_station_in, port=4, bit(7)=1, port=5, bit(0)=0
 defrule([name: move_left_station_in_rule],
     if  move_left_station_in
     then (
@@ -109,7 +121,7 @@ defrule([name: move_left_station_in_rule],
     )
  ).
 
-% move_x_right, port=4, bit(0)=0, bit(1)=1
+% move_left_station_out, port=4, bit(7)=0, port=5, bit(0)=1
 defrule([name: move_left_station_out_rule],
     if  move_left_station_out
     then (
@@ -119,7 +131,7 @@ defrule([name: move_left_station_out_rule],
     )
  ).
 
-% move_x_right, port=4, bit(0)=0, bit(1)=1
+% stop_left_station, port=4, bit(7)=0, port=5, bit(0)=0
 defrule([name: stop_left_station_rule],
     if  stop_left_station
     then (
@@ -129,8 +141,11 @@ defrule([name: stop_left_station_rule],
     )
  ).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                 RIGHT STATION MOVEMENT               %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% move_x_right, port=4, bit(0)=1, bit(1)=0
+% move_right_station_in, port=5, bit(1)=1, bit(2)=0
 defrule([name: move_right_station_in_rule],
     if  move_right_station_in
     then (
@@ -140,7 +155,7 @@ defrule([name: move_right_station_in_rule],
     )
  ).
 
-% move_x_right, port=4, bit(0)=0, bit(1)=1
+% move_right_station_out, port=5, bit(1)=0, bit(2)=1
 defrule([name: move_right_station_out_rule],
     if  move_right_station_out
     then (
@@ -151,7 +166,7 @@ defrule([name: move_right_station_out_rule],
  ).
 
 
-% move_x_right, port=4, bit(0)=0, bit(1)=1
+% stop_right_station, port=5, bit(1)=0, bit(2)=0
 defrule([name: stop_right_station_rule],
     if  stop_right_station
     then (
@@ -160,19 +175,3 @@ defrule([name: stop_right_station_rule],
        retract(stop_right_station)
     )
  ).
-
-/*defrule([name: x_moving],
-    if  x_moving_spec(X_move,Port, Bit_pos, Bit_val)      and
-        port_value(Port, Byte_val)                            and
-        (  Bit_val is getbit(Byte_val, Bit_pos) )
-    then (
-       assert(x_is_moving(X_move))
-    )
- ).*/
-
-/*defrule([name: x_moving],
-    if port_value(4, V) and (0 is getbit(V,4,0)) and (0 is getbit(V,4,1))
-    then (
-            assert(x_mov(0))
-    )
-).*/
