@@ -1,0 +1,27 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "run pl",
+            "type": "shell",
+            "command": "swipl ${file}",
+            "problemMatcher": [],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "run project",
+            "type": "shell",
+            "command": "swipl ./kbServer/warehouse_config.pl ./kbServer/warehouse_dispatcher.pl ./kbServer/warehouse_monitoring.pl ./kbServer/warehouse_supervisor.pl",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

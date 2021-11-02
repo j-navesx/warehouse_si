@@ -1,0 +1,57 @@
+﻿
+
+Object: <input type="text" id="idObj"> <br />
+        x:<input type="text" id="x" size="5">
+        y:<input type="text" id="y" size="5">
+        z:<input type="text" id="z" size="5"><br/>
+
+        sx:<input type="text" id="sx" size="5">
+        sy:<input type="text" id="sy" size="5">
+        sz:<input type="text" id="sz" size="5"><br />
+
+        rx:<input type="text" id="rx" size="5">
+        ry:<input type="text" id="ry" size="5">
+        rz:<input type="text" id="rz" size="5"><br/>
+
+
+<script>
+        $('#idObj').on('keypress', function (e) {
+            if (e.which === 13) {
+                console.log($(this).val());
+                threeObj = threeObjects[$(this).val()];
+                $('#x').val(threeObj.position.x);
+                $('#y').val(threeObj.position.y);
+                $('#z').val(threeObj.position.z);
+
+                $('#sx').val(threeObj.scale.x);
+                $('#sy').val(threeObj.scale.y);
+                $('#sz').val(threeObj.scale.z);
+
+                $('#rx').val(threeObj.rotation.x);
+                $('#ry').val(threeObj.rotation.y);
+                $('#rz').val(threeObj.rotation.z);
+            }
+        });
+
+        $('#x, #y ,#z, #rx, #ry, #rz').on('keypress', function (e) {
+            if (e.which === 13) {
+                console.log($("#idObj").val());
+                move_abs_linear(threeObjects[$("#idObj").val()], $('#x').val(), $('#y').val(), $('#z').val());
+                   
+
+
+
+            }
+        });
+
+        $('#sx, #sy, #sz').on('keypress', function (e) {
+            if (e.which === 13) {
+                //alert("aaaa2");
+                threeObjects[$("#idObj").val()].scale.x = $('#sx').val();
+                threeObjects[$("#idObj").val()].scale.y = $('#sy').val();
+                threeObjects[$("#idObj").val()].scale.z = $('#sz').val();
+            }
+        });
+        
+
+</script>

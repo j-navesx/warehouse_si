@@ -1,0 +1,178 @@
+:-ensure_loaded('RTXengine/RTXengine.pl').
+:-ensure_loaded(warehouse_config).
+:-dynamic x_moving/1.
+
+% move_x_right, port=4, bit(0)=1, bit(1)=0
+defrule([name: move_x_right_rule],
+    if  move_x_right
+    then (
+       set_bit_value(4, 0, 1),
+       set_bit_value(4, 1, 0),
+       retract(move_x_right)
+       %assert(x_moving(1)),
+       %retract(x_moving(_))
+    )
+ ).
+
+% move_x_right, port=4, bit(0)=0, bit(1)=1
+defrule([name: move_x_left_rule],
+    if  move_x_left
+    then (
+       set_bit_value(4, 0, 0),
+       set_bit_value(4, 1, 1),
+       retract(move_x_left)
+    )
+ ).
+
+
+% move_x_right, port=4, bit(0)=0, bit(1)=1
+defrule([name: stop_x_rule],
+    if  stop_x
+    then (
+       set_bit_value(4, 0, 0),
+       set_bit_value(4, 1, 0),
+       retract(stop_x)
+    )
+ ).
+
+
+% move_x_right, port=4, bit(0)=1, bit(1)=0
+defrule([name: move_y_in_rule],
+    if  move_y_in
+    then (
+       set_bit_value(4, 4, 1),
+       set_bit_value(4, 3, 0),
+       retract(move_y_in)
+    )
+ ).
+
+% move_x_right, port=4, bit(0)=0, bit(1)=1
+defrule([name: move_y_out_rule],
+    if  move_y_out
+    then (
+       set_bit_value(4, 4, 0),
+       set_bit_value(4, 3, 1),
+       retract(move_y_out)
+    )
+ ).
+
+
+% move_x_right, port=4, bit(0)=0, bit(1)=1
+defrule([name: stop_y_rule],
+    if  stop_y
+    then (
+       set_bit_value(4, 4, 0),
+       set_bit_value(4, 3, 0),
+       retract(stop_y)
+    )
+ ).
+
+% move_x_right, port=4, bit(0)=1, bit(1)=0
+defrule([name: move_z_up_rule],
+    if  move_z_up
+    then (
+       set_bit_value(4, 5, 1),
+       set_bit_value(4, 6, 0),
+       retract(move_z_up)
+    )
+ ).
+
+% move_x_right, port=4, bit(0)=0, bit(1)=1
+defrule([name: move_z_down_rule],
+    if  move_z_down
+    then (
+       set_bit_value(4, 5, 0),
+       set_bit_value(4, 6, 1),
+       retract(move_z_down)
+    )
+ ).
+
+
+% move_x_right, port=4, bit(0)=0, bit(1)=1
+defrule([name: stop_z_rule],
+    if  stop_z
+    then (
+       set_bit_value(4, 5, 0),
+       set_bit_value(4, 6, 0),
+       retract(stop_z)
+    )
+ ).
+
+
+% move_x_right, port=4, bit(0)=1, bit(1)=0
+defrule([name: move_left_station_in_rule],
+    if  move_left_station_in
+    then (
+       set_bit_value(4, 7, 1),
+       set_bit_value(5, 0, 0),
+       retract(move_left_station_in)
+    )
+ ).
+
+% move_x_right, port=4, bit(0)=0, bit(1)=1
+defrule([name: move_left_station_out_rule],
+    if  move_left_station_out
+    then (
+       set_bit_value(4, 7, 0),
+       set_bit_value(5, 0, 1),
+       retract(move_left_station_out)
+    )
+ ).
+
+% move_x_right, port=4, bit(0)=0, bit(1)=1
+defrule([name: stop_left_station_rule],
+    if  stop_left_station
+    then (
+       set_bit_value(4, 7, 0),
+       set_bit_value(5, 0, 0),
+       retract(stop_left_station)
+    )
+ ).
+
+
+% move_x_right, port=4, bit(0)=1, bit(1)=0
+defrule([name: move_right_station_in_rule],
+    if  move_right_station_in
+    then (
+       set_bit_value(5, 1, 1),
+       set_bit_value(5, 2, 0),
+       retract(move_right_station_in)
+    )
+ ).
+
+% move_x_right, port=4, bit(0)=0, bit(1)=1
+defrule([name: move_right_station_out_rule],
+    if  move_right_station_out
+    then (
+       set_bit_value(5, 1, 0),
+       set_bit_value(5, 2, 1),
+       retract(move_right_station_out)
+    )
+ ).
+
+
+% move_x_right, port=4, bit(0)=0, bit(1)=1
+defrule([name: stop_right_station_rule],
+    if  stop_right_station
+    then (
+       set_bit_value(5, 1, 0),
+       set_bit_value(5, 2, 0),
+       retract(stop_right_station)
+    )
+ ).
+
+/*defrule([name: x_moving],
+    if  x_moving_spec(X_move,Port, Bit_pos, Bit_val)      and
+        port_value(Port, Byte_val)                            and
+        (  Bit_val is getbit(Byte_val, Bit_pos) )
+    then (
+       assert(x_is_moving(X_move))
+    )
+ ).*/
+
+/*defrule([name: x_moving],
+    if port_value(4, V) and (0 is getbit(V,4,0)) and (0 is getbit(V,4,1))
+    then (
+            assert(x_mov(0))
+    )
+).*/

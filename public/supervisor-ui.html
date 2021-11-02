@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Page Title</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" crossorigin="anonymous"></script>
+
+    <script>
+
+        function done_read_sensor_values(result) {
+            console.log(result);
+            const obj = JSON.parse(result);
+            $("#xLabel").text("X: " + obj.x);
+            $("#yLabel").text("Y: " + obj.y);
+            $("#zLabel").text("Z: " + obj.z);
+            $("#xMovingLabel").text("xMov: " + obj.x_moving);
+            $("#cageSensorLabel").text("Cg: " + 1 * obj.part_in_cage);
+        }
+
+        function done_read_failures(result) {
+            if (result !== "no_failures") {
+                $("#errorMessageLabel").text(result);
+                $('#alertDiv').fadeIn(500);
+            } else {
+                $('#alertDiv').fadeOut(500);
+            }
+        }
+
+        let timerId = setTimeout(
+            function tick() {
+                ajax_get_request("/read_sensor_values", { "cmd": "xpto" },
+                    done_read_sensor_values);
+                ajax_get_request("/query_read_failures", { "cmd": "xpto" },
+                    done_read_failures);
+                timerId = setTimeout(tick, 100);
+            }
+            , 100);
+
+        function ajax_get_request(remote_address, the_arguments, done_callback = null, fail_callback = null, always_callbak = null) {
+            $.get(remote_address, the_arguments, function (results) {
+                if (done_callback !== null) {
+                    console.log("results" + results);
+                    done_callback(results);
+                    //the_modal_dialog.style.display = "none";
+                }
+            }).fail(function () {
+                console.log("AJAX error requesting: " + remote_address);
+            }).always(function () {
+                //alert("finished");
+            });
+        }
+
+
+        function getCurrentLine(text__area) {
+            textarea = "#" + text__area;
+            pos = document.getElementById(text__area).selectionStart;//$(textarea).getSelection().start; // fieldselection jQuery plugin
+            taval = $(textarea).val();
+            start = taval.lastIndexOf('\n', pos - 1) + 1;
+            end = taval.indexOf('\n', pos);
+
+            if (end == -1) {
+                end = taval.length;
+            }
+
+            return taval.substr(start, end - start);
+        }
+
+        $(document).ready(function () {
+
+            $("#buttonCloseMessage").click(function () {
+                $('#alertDiv').fadeOut(500);
+            });
+
+            $("#buttonRecover").click(function () {
+                ajax_get_request("/query_recover_failures", { "cmd": "xpto" });
+            });
+
+            $("#x-left").click(function () {
+                ajax_get_request("/x-move-left", { "cmd": "x-move-left" });
+            });
+            $("#x-right").click(function () {
+                ajax_get_request("/x-move-right", { "cmd": "x-move-right" });
+            });
+            $("#x-stop").click(function () {
+                ajax_get_request("/x-stop", { "cmd": "x-move-stop" });
+            });
+            $("#y-inside").click(function () {
+                ajax_get_request("/y-move-inside", { "cmd": "y-move-inside" });
+            });
+            $("#y-outside").click(function () {
+                ajax_get_request("/y-move-outside", { "cmd": "y-move-outside" });
+            });
+            $("#y-stop").click(function () {
+                ajax_get_request("/y-stop", { "cmd": "y-move-stop" });
+            });
+            $("#z-up").click(function () {
+                ajax_get_request("/z-move-up", { "cmd": "z-move-up" });
+            });
+            $("#z-down").click(function () {
+                ajax_get_request("/z-move-down", { "cmd": "z-move-down" });
+            });
+            $("#z-stop").click(function () {
+                ajax_get_request("/z-stop", { "cmd": "z-move-stop" });
+            });
+            $("#isPartInCage").click(function () {
+                ajax_get_request("/isPartInCage", { "cmd": "isPartInCage" }, done_executed_query);
+            });
+            $("#isPartOnLeftStation").click(function () {
+                ajax_get_request("/isPartOnLeftStation", { "cmd": "isPartOnLeftStation" }, done_executed_query);
+            });
+            $("#isPartOnRightStation").click(function () {
+                ajax_get_request("/isPartOnRightStation", { "cmd": "isPartOnRightStation" }, done_executed_query);
+            });
+            $("#left-inside").click(function () {
+                ajax_get_request("/left-inside", { "cmd": "left-inside" });
+            });
+
+            $("#left-outside").click(function () {
+                ajax_get_request("/left-outside", { "cmd": "left-outside" });
+            });
+
+            $("#left-stop").click(function () {
+                ajax_get_request("/left-stop", { "cmd": "left-stop" });
+            });
+
+            $("#right-inside").click(function () {
+                ajax_get_request("/right-inside", { "cmd": "right-inside" });
+            });
+
+            $("#right-outside").click(function () {
+                ajax_get_request("/right-outside", { "cmd": "right-outside" });
+            });
+
+            $("#right-stop").click(function () {
+                ajax_get_request("/right-stop", { "cmd": "right-stop" });
+            });
+            $("#get-x-pos").click(function () {
+                ajax_get_request("/get-x-pos", { "cmd": "get-x-pos" }, done_executed_query);
+            });
+            $("#get-y-pos").click(function () {
+                ajax_get_request("/get-y-pos", { "cmd": "get-y-pos" }, done_executed_query);
+            });
+            $("#get-z-pos").click(function () {
+                ajax_get_request("/get-z-pos", { "cmd": "get-z-pos" }, done_executed_query);
+            });
+
+            $("#getInitialStatesButton").click(function () {
+                ajax_get_request("/query_warehouse_states", null, function (result) {
+                    console.log("Initial_state=" + result.trim());
+                    $('#plannerInicialStateText').val(result.trim());
+                });
+            });
+
+            $("#generatePlanButton").click(function () {
+                si = $("#plannerInicialStateText").val();
+                sf = $("#plannerGoalsText").val();
+                ajax_get_request("/query_generate_plan", { "si": si, "sf": sf }, function (result) {
+                    console.log("generated_plan=" + result.trim());
+                    $('#generatedPlanTextArea').val(result.trim());
+                });
+            });
+
+            $("#executePlanButton").click(function () {
+                states = $("#plannerInicialStateText").val()
+                plan = $("#generatedPlanTextArea").val();
+                ajax_get_request("/query_execute_plan", { "plan": plan, "states": states }, function (result) {
+                    console.log("execute_plan=" + result.trim());
+                    $('#logsText').val(result.trim());
+                });
+            });
+
+        });
+
+
+        $("#prologTextArea2").keypress(function (event) {
+            console.log("char=" + event.which);
+            if (event.which == 13) {
+                //code here
+                //13 represents Enter key
+                var current_line = getCurrentLine(this);
+                console.log("line=" + current_line);
+            }
+        });
+
+
+        function processEnter(e) {
+            if (event.which == 13) {
+                var current_line = getCurrentLine("prologTextArea");
+                console.log("antes de processar= " + current_line);
+                ajax_get_request("/execute_remote_query", { "query": current_line }, done_executed_query);
+            }
+
+        }
+
+
+
+        function done_executed_query(result) {
+            //console.log("result=" + result);
+            /*
+             var pos = document.getElementById("prologTextArea").selectionStart;
+
+             var cursorPos = $('#prologTextArea').prop('selectionStart');
+             var v = $('#prologTextArea').val();
+             var textBefore = v.substring(0, cursorPos);
+             var textAfter = v.substring(cursorPos, v.length);
+
+             $('#prologTextArea').val(textBefore + result + textAfter);
+
+             $('#prologTextArea').prop('selectionEnd', cursorPos + result.length);
+             */
+            $('#prologTextAnswers').val(result.trim());
+
+        }
+
+
+    </script>
+    <style>
+        iframe {
+            height: 50%;
+            width: 50%;
+        }
+
+        div {
+            border-width: lpx;
+            border-style: ridge;
+            border-color: darkgreen;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="alert alert-success" role="alert">
+                    <h1>Inteligent Supervision Remote User Interface</h1>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 ">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert" id="alertDiv">
+                    <strong>Supervisor error:</strong> <label id="errorMessageLabel">error message here.</label>
+                    <button type="button" class="btn float-right btn-success btn-sm" id="buttonRecover">Recover</button>
+                    <button type="button" class="close alert-close" aria-label="Close" id="buttonCloseMessage">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table class="table table-sm">
+                            <tbody>
+                                <tr>
+                                    <td><button id="x-left" type="button" class="btn btn-warning btn-sm btn-outline-primary py-0">x-Left</button></td>
+                                    <td><button id="x-right" type="button" class="btn btn-warning btn-sm btn-outline-primary py-0">x-Right</button></td>
+                                    <td><button id="x-stop" type="button" class="btn btn-warning btn-sm btn-outline-primary py-0">x-Stop</button></td>
+                                </tr>
+                                <tr>
+                                    <td><button id="y-inside" type="button" class="btn btn-warning btn-sm btn-outline-primary py-0">y-Ins.</button></td>
+                                    <td><button id="y-outside" type="button" class="btn btn-warning btn-sm btn-outline-primary py-0">y-Out.</button></td>
+                                    <td><button id="y-stop" type="button" class="btn btn-warning btn-sm btn-outline-primary py-0">y-Stop</button></td>
+                                </tr>
+                                <tr>
+                                    <td><button id="z-up" type="button" class="btn btn-warning btn-sm btn-outline-primary py-0">z-Up.</button></td>
+                                    <td><button id="z-down" type="button" class="btn btn-warning btn-sm btn-outline-primary py-0">z-Down</button></td>
+                                    <td><button id="z-stop" type="button" class="btn btn-warning btn-sm btn-outline-primary py-0">z-Stop</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li><a data-toggle="tab" role="tab" href="#prologHome" class="btn btn-sm btn-success">Prolog</a></li>
+                            <li><a data-toggle="tab" role="tab" href="#planner" class="btn btn-sm btn-success">Planner</a></li>
+
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+
+                        <div class="tab-content">
+                            <div id="prologHome" class="tab-pane in active">
+                                <label for="prologTextArea">kb-Query</label>
+                                <textarea class="form-control" id="prologTextArea" rows="2" onkeypress="processEnter(event, this)"></textarea>
+                                <label for="prologTextAnswers">Answers</label>
+                                <textarea class="form-control" id="prologTextAnswers" rows="2"></textarea>
+                            </div>
+                            <div id="planner" class="tab-pane fade">
+                                <button id="getInitialStatesButton" type="button" class="btn btn-primary btn-sm  py-0">Get initial States</button>
+                                <textarea class="form-control" id="plannerInicialStateText" rows="2"></textarea>
+
+                                <label for="plannerGoalsLabel">Goals</label>
+                                <textarea class="form-control" id="plannerGoalsText" rows="2"></textarea>
+
+                                <button id="generatePlanButton" type="button" class="btn btn-primary btn-sm  py-0">Generate Plan</button>
+                                <button id="executePlanButton" type="button" class="btn btn-primary btn-sm  py-0">Execute</button>
+                                <textarea class="form-control" id="generatedPlanTextArea" rows="2"></textarea>
+
+                                <button id="clearLogsButton" type="button" class="btn btn-primary btn-sm  py-0">Clear logs</button>
+                                <textarea class="form-control" id="logsText" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="embed-responsive embed-responsive-16by9">
+                            <iframe src="http://localhost:8081/ss_multi_parts.html" title="Simulator"></iframe>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-1" style="font-size: 12px;">
+                        <label id="xLabel" style="font-size: 12px;"></label>
+                    </div>
+                    <div class="col-sm-1" style="font-size: 12px;">
+                        <label id="yLabel" style="font-size: 12px;"></label>
+                    </div>
+                    <div class="col-sm-1" style="font-size: 12px;">
+                        <label id="zLabel"></label>
+                    </div>
+                    <div class="col-sm-1" style="font-size: 12px;">
+                        <label id="xMovingLabel"></label>
+                    </div>
+                    <div class="col-sm-1" style="font-size: 12px;">
+                        <label id="cageSensorLabel"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
