@@ -2,7 +2,7 @@
 A program made in `Prolog` and `C++` with a simulator provided by the teaching staff
 ## Run the project
 ### 1. Running the simulator
-Start by executing the [C++ project](serverApp/). (space, space, Enter)
+Start by executing the [C++ project](serverApp/).\
 Keep the command line open!
 ### 2. Start the Supervisor Program
 (Recommended to use VS Code)
