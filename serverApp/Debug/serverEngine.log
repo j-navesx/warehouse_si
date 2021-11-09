@@ -1,2 +1,12 @@
-﻿  montoringModule.cpp
+﻿  main.cpp
+  dispatcherModule.cpp
+  montoringModule.cpp
+  prologWebClient.cpp
+  niDAQWebInterface.cpp
+  urlEncoding.cpp
+  warehouseWebServer.cpp
+  localControl.cpp
+C:\si\labwork1\serverApp\source\localControl.cpp(474,51): warning C4554: '<<': check operator precedence for possible error; use parentheses to clarify precedence
+  Generating Code...
+  mongoose.c
   serverEngine.vcxproj -> C:\si\labwork1\serverApp\Debug\serverEngine.exe

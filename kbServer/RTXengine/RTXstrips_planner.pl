@@ -32,7 +32,7 @@ solve(Goals, W0, W1, Plan):-
     retractall(goals(_)),
     assert(goals(Goals)),
     solve(Goals, W0, W1, [], Plan_nested),
-    % ISTO NÂO DEVERIA SER NECESSARIO
+    % ISTO Nï¿½O DEVERIA SER NECESSARIO
     holds(Goals, W1),
     flatten(Plan_nested, Plan).
 
@@ -52,7 +52,7 @@ solve(Goals,W0, W3, Forbidden, Plan):-
     % get_a_goal(Goal, Goals, Remaining_goals),
     get_next_goal(Goal, Goals, Remaining_goals),
 
-    \+ holds( [Goal], W0),   % passar à frente dum estado ja satisfeito
+    \+ holds( [Goal], W0),   % passar ï¿½ frente dum estado ja satisfeito
 
     %writeln(handling_goal(Goal, W0)),
 
@@ -91,8 +91,8 @@ solve(Goals,W0, W3, Forbidden, Plan):-
 
 % there is magic in this operator...
 % It does the job... wish understand why!
-unify_Pre_with_World([], _) => true.
-unify_Pre_with_World([E|R], Set) =>
+unify_Pre_with_World([], _) :- true.
+unify_Pre_with_World([E|R], Set) :-
     (   memberchk(E, Set),!;true),
     unify_Pre_with_World(R, Set).
 
