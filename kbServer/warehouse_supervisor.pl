@@ -8,10 +8,6 @@
 % :-consult(warehouse_error_recovery).
 :-consult(warehouse_planner).
 
-:- http_handler(root(rtxengine   ), rtxengine , []).
-:- http_handler(root(hello       ), hello     , []).
-:- http_handler(root(rtx_get     ), rtx_get   , []).
-:- http_handler(root(prolog      ), rtx_get   , []).
 
 
 write_comma(0):-!.

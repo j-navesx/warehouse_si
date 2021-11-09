@@ -133,6 +133,23 @@ static void ev_handler(struct mg_connection *nc, int ev, void *ev_data, void * f
 				mg_http_printf_chunk(nc, "", 0);							
 			}//if POST
 		}
+		else if (mg_vcmp(&hm->uri, "/rtx_get") == 0) {
+			if (mg_vcmp(&hm->method, "POST") == 0) {
+				char query[10000] = "";
+				mg_http_get_var(&hm->body, "query", query, sizeof(query));
+				//   /rtx_get?query=get_output_port_values
+				char request[11000];
+				sprintf(request, "/rtx_get?query=%s", query);
+				printf("\nremote_request=%s", request);
+				string result = sendPrologWebRequest(request, prologServer, prologPort);
+				printf("\nresult=%s", result.c_str());
+				mg_printf(nc, "HTTP/1.1 200 OK\r\n");
+				mg_printf(nc, "Content-Type: application/plain\r\n");
+				mg_printf(nc, "Transfer-Encoding: chunked\r\n\r\n");
+				mg_http_printf_chunk(nc, result.c_str());
+				mg_http_printf_chunk(nc, "", 0);
+			}
+		}
 		else
 			mg_http_serve_dir(nc, hm, &s_http_server_opts);
 	}

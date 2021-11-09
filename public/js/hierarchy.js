@@ -25,15 +25,39 @@ function delete_child(threeParent, threeChild) {
 
 function move_delta_linear(threeObject, delta_x, delta_y, delta_z) {
 
-    threeObject.position.x += delta_x;
-    threeObject.position.y += delta_y;
-    threeObject.position.z += delta_z;
+    var x = parseFloat(threeObject.position.x);
+    var y = parseFloat(threeObject.position.y);
+    var z = parseFloat(threeObject.position.z);
+
+    if (isNaN(threeObject.position.x)) {
+        x = 0;
+    }
+
+    if (isNaN(threeObject.position.y)) {
+        y = 0;
+    }
+
+    if (isNaN(threeObject.position.z)) {
+        z = 0;
+    }
+
+    threeObject.position.x = x + parseFloat(delta_x);
+    threeObject.position.y = y + parseFloat(delta_y);
+    threeObject.position.z = z + parseFloat(delta_z);
+
+    /*
+    if (isNaN(threeObject.position.x)) {
+        debugger;
+    }
+    */
 
 
     // verificar se é só igual
+    /*
     threeObject.rotation.x += 0;
     threeObject.rotation.y += 0;
     threeObject.rotation.z += 0;
+    */
 
     var objPhys = threeObject.userData.physicsBody;
     var tr = objPhys.getWorldTransform();
@@ -58,9 +82,25 @@ function move_delta_linear(threeObject, delta_x, delta_y, delta_z) {
 
 
 function move_abs_linear(threeObject, abs_x, abs_y, abs_z) {
-    var delta_x = abs_x - threeObject.position.x;
-    var delta_y = abs_y - threeObject.position.y;
-    var delta_z = abs_z - threeObject.position.z;
+    var x = parseFloat(threeObject.position.x);
+    var y = parseFloat(threeObject.position.y);
+    var z = parseFloat(threeObject.position.z);
+
+    if (isNaN(threeObject.position.x)) {
+        x = 0;
+    }
+
+    if (isNaN(threeObject.position.y)) {
+        y = 0;
+    }
+
+    if (isNaN(threeObject.position.z)) {
+        z = 0;
+    }
+
+    var delta_x = parseFloat(abs_x) - x;
+    var delta_y = parseFloat(abs_y) - y;
+    var delta_z = parseFloat(abs_z) - z;
     move_delta_linear(threeObject, delta_x, delta_y, delta_z);
 }
 

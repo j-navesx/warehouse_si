@@ -14,7 +14,7 @@ void monitoringOperation() {
 
 
 	strcpy(queryString, "true"); // just simplifies comma in placement code below
-	for (int port = 0; port < 4 + 2 * (firstTime); port++) {
+	for (int port = 0; port < 4   +  2*(firstTime); port++) { // at first time, send output values too.
 		uInt8 byteValue = readDigitalU8(port);
 
 		if ((portValues[port] != byteValue) || firstTime) {

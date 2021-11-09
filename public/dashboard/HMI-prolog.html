@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <title>SI 2021</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+
+
+    <script src="dashboard.js?turn=3"></script>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body style="background: rgb(234, 241, 234);">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="row">
+                <div class="col-sm-12">
+                    <button id="cleanPrologResults">Clean</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <textarea readonly id="idQueryPrologResult" class="span12" rows="10" style="min-width: 100%" placeholder="Query results here" required></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <textarea id="idQueryProlog" class="span12" rows="10" style="min-width: 100%" placeholder="Make query here, Enter, Ctrl+Enter to add line in the middle..." required></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $("#cleanPrologResults").click(function () {
+            $('#idQueryPrologResult').val("");
+        });
+
+        $("#idQueryProlog").keypress(function (event) {            
+            if (event.which == 13 && event.ctrlKey == false) {
+                var current_line = getCurrentLine("idQueryProlog");
+                if (current_line.last_line === false) {
+                    // don't add extra line if before last line                    
+                    event.preventDefault();
+                }
+                if (current_line.text !== "") {
+                    requestData = encodeURIComponent(current_line.text);
+                    ajax_post_request("/rtx_get", { "query": requestData }, function (result) {
+                        console.log("query result = " + result.trim());
+                        var separator = "\n";
+                        if (("" + $('#idQueryPrologResult').val()).length === 0)
+                            separator = ""
+                        var updatedText = $('#idQueryPrologResult').val() + separator + result.trim();
+                        $('#idQueryPrologResult').val(updatedText);
+                        var elementResult = document.getElementById("idQueryPrologResult");                        
+                        elementResult.scrollTop = elementResult.scrollHeight;
+                    });
+                }
+            }
+            if (event.which == 13 && event.ctrlKey === true) {
+                // https://www.geeksforgeeks.org/how-to-insert-text-into-the-textarea-at-the-current-cursor-position/
+                let allText = $('#idQueryProlog').val();
+
+                curPos = document.getElementById("idQueryProlog").selectionStart;
+                text_to_insert = "\n";
+
+                $('#idQueryProlog').val(allText.slice(0, curPos) + text_to_insert + allText.slice(curPos));
+                document.getElementById("idQueryProlog").focus();
+                document.getElementById("idQueryProlog").selectionEnd = curPos + 1;
+            }
+        });
+    </script>
+</body>
+</html>

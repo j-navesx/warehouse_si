@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <title>SI 2021</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+
+
+    <script src="dashboard.js?turn=3"></script>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body style="background: rgb(234, 241, 234);">
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="row">
+                <div class="col-sm-4 text-left bg-success">
+                    The Warehouse states
+                </div>
+                <div class="col-sm-4">
+                    <button id="idLoadStates" class="btn-primary" onclick="loadStatesClick(this);">Load States</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <textarea id="idSystemStates" class="span12" rows="4" style="min-width: 95%" placeholder="Press the button to load warehouse states. See in the source code how this is done; find 'loadStatesClick()'" required></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <p>Goals:</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <textarea id="idGoals" class="span12" rows="2" style="min-width: 95%" placeholder="Put goals here, e.g. [x_is_at(2), x_moving(0)]" required></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <Button id="idGetPlan">Get Plan</Button>
+                </div>
+                <div class="col-sm-6">
+                    Plan:
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <textarea id="idPlan" class="span12" rows="2" style="min-width: 95%" placeholder="Edit aplan or Generate one..." required></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <Button id="idExecutePlan">Execute plan</Button>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <script>
+        
+
+        function loadStatesClick(button) {
+           
+            ajax_post_request("/rtx_get", { "query": "load_all_storage_states(List),write(List)" }, function (result) {
+                console.log("query result = " + result.trim());                
+                $('#idSystemStates').val( result.trim() );
+            });
+        }
+
+        
+        $("#idGetPlan").click(function () {            
+            var systemStates = $("#idSystemStates").val();
+            var goals = $("#idGoals").val();
+            // ` é um acento
+            var query = `solve(${goals}, ${systemStates}, WorldFinal, Plan), `;
+            // use format to obtain result in JSON format 
+            var query_cont = 'format(\'{"wf":"~w", "plan":"~w"}\', [WorldFinal, Plan])';
+            var query_final = query + query_cont;
+            ajax_post_request("/rtx_get", { "query": query_final }, function (result) {
+                console.log("query result = " + result.trim());
+                var obtainedPlan = JSON.parse(result);
+                $('#idPlan').val(obtainedPlan.plan);
+            });
+        });
+
+        $("#idExecutePlan").click(function () {
+            var planToExecute = $('#idPlan').val();
+            var request = `assert(plan(from_web, ${planToExecute}))`
+            ajax_post_request("/rtx_get", { "query": request }, function (result) {
+                console.log("query result = " + result.trim());                
+            });
+        });
+        
+        
+
+
+    </script>
+</body>
+</html>

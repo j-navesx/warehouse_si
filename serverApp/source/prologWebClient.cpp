@@ -40,7 +40,7 @@ void CALLBACK HttpCallback(HINTERNET hInternet, DWORD* dwContext, DWORD dwIntern
 		//std::cout << "Handle created.\n";
 		//theRequest = 1;
 		break;
-	
+
 	case WINHTTP_CALLBACK_FLAG_WRITE_COMPLETE:
 		//std::cout << "post done.\n";
 		//responseReceived++;
@@ -53,24 +53,32 @@ void CALLBACK HttpCallback(HINTERNET hInternet, DWORD* dwContext, DWORD dwIntern
 	case WINHTTP_CALLBACK_STATUS_RESPONSE_RECEIVED:
 		//std::cout << "Response received.\n";
 		//theRequest = 3;
-		
+
 		break;
 	case WINHTTP_CALLBACK_FLAG_INTERMEDIATE_RESPONSE:
 		//std::cout << "intermediate response.\n";
-		
+
 		break;
 
 	}
 }
 
 
-string  sendPrologWebRequest(char* request, char *server, char *port) {
+int semaphore_mutex = 1;
+string   sendPrologWebRequest(char* request, char* server, char* port) {
 	DWORD dwSize = 0;
 	DWORD dwDownloaded = 0;
 	LPSTR pszOutBuffer = NULL;
 	BOOL  bResults = FALSE;
-	
-	
+
+	// received output
+	string result="";
+
+	while (semaphore_mutex == 0) {
+		Sleep(1);
+	}
+	semaphore_mutex = 0;
+
 
 	//convert "char* server" to LPCWSTR
 	string temp = server;
@@ -101,12 +109,12 @@ string  sendPrologWebRequest(char* request, char *server, char *port) {
 	}
 
 
-	
-	
+
+
 	// Specify an HTTP server.
 	if (hSession)
 		if (!hConnect) {
-			
+
 
 			hConnect = WinHttpConnect(hSession, serverName,
 				portNumber, 0);
@@ -127,10 +135,10 @@ string  sendPrologWebRequest(char* request, char *server, char *port) {
 		bResults = WinHttpSendRequest(
 			hRequest,
 			WINHTTP_NO_ADDITIONAL_HEADERS,
-			0, 
+			0,
 			WINHTTP_NO_REQUEST_DATA,
 			0,
-			0, 
+			0,
 			0);
 
 	// End the request.
@@ -140,38 +148,86 @@ string  sendPrologWebRequest(char* request, char *server, char *port) {
 	}
 	// Keep checking for data until there is nothing left.
 	if (bResults) {
+		/* funciona
 		while (!WinHttpQueryDataAvailable(hRequest, &dwSize)) {
 			Sleep(1);
 		}
-		WinHttpQueryDataAvailable(hRequest, &dwSize);
+		//WinHttpQueryDataAvailable(hRequest, &dwSize);
 		pszOutBuffer = new char[dwSize + 1];
 		ZeroMemory(pszOutBuffer, dwSize + 1);
-		while (dwDownloaded < dwSize) {
-			WinHttpReadData(hRequest, (LPVOID)pszOutBuffer, dwSize, &dwDownloaded);
-			Sleep(1);
-		}
-	}
-	
-
-		// Report any errors.
-		if (!bResults)
-			printf("Error: %d has occurred, when trying request %s on %s:%s.\n", 
-				GetLastError(), request, server, port);
-
-		// Close any open handles.
-		if (hRequest) 
-			WinHttpCloseHandle(hRequest);
-			
-		//if (hConnect) WinHttpCloseHandle(hConnect);
-		//if (hSession) WinHttpCloseHandle(hSession);	
-
-		string result;
-		result.assign(pszOutBuffer ? pszOutBuffer : "");
 		
+		WinHttpReadData(hRequest, (LPVOID)pszOutBuffer, dwSize, &dwDownloaded);
+		*/do
+		{
+			// Check for available data.
+			dwSize = 0;
+			if (!WinHttpQueryDataAvailable(hRequest, &dwSize))
+			{
+				printf("Error %u in WinHttpQueryDataAvailable.\n",
+					GetLastError());
+				break;
+			}
 
-		if(pszOutBuffer)
-			delete[]pszOutBuffer;
-		return result;
+			// No more available data.
+			if (!dwSize)
+				break;
+
+			// Allocate space for the buffer.
+			pszOutBuffer = new char[dwSize + 1];
+			if (!pszOutBuffer)
+			{
+				printf("Out of memory\n");
+				break;
+			}
+
+			// Read the Data.
+			ZeroMemory(pszOutBuffer, dwSize + 1);
+
+			if (!WinHttpReadData(hRequest, (LPVOID)pszOutBuffer,
+				dwSize, &dwDownloaded))
+			{
+				printf("Error %u in WinHttpReadData.\n", GetLastError());
+			}
+			else
+			{
+				//printf("%s", pszOutBuffer);
+			}
+
+			// Free the memory allocated to the buffer.
+			result.append(pszOutBuffer);
+			delete[] pszOutBuffer;
+
+			// This condition should never be reached since WinHttpQueryDataAvailable
+			// reported that there are bits to read.
+			if (!dwDownloaded)
+				break;
+
+		} while (dwSize > 0);
+	}
+
+
+	// Report any errors.
+	if (!bResults)
+		printf("Error: %d has occurred, when trying request %s on %s:%s.\n",
+			GetLastError(), request, server, port);
+
+	// Close any open handles.
+	if (hRequest)
+		WinHttpCloseHandle(hRequest);
+
+	//if (hConnect) WinHttpCloseHandle(hConnect);
+	//if (hSession) WinHttpCloseHandle(hSession);	
+
+	
+	//result.assign(pszOutBuffer ? pszOutBuffer : "");
+
+	//printf("\n webProlog result=%s", result.c_str());
+
+	//if (pszOutBuffer)
+	//	delete[]pszOutBuffer;
+
+	semaphore_mutex = 1;
+	return result;
 }
 
 
@@ -179,8 +235,8 @@ string  sendPrologWebRequest(char* request, char *server, char *port) {
 
 void main_webRequest(void) {
 	//LPSTR output = sendWebRequest((char *)"/rtx_get?query=retractall(port_val(_,_)),assert(port_val(2,255))");
-	string output = sendPrologWebRequest((char*)"/rtx_get?query=write(a)", (char *)"127.0.0.1", (char *)"8082");
+	string output = sendPrologWebRequest((char*)"/rtx_get?query=write(a)", (char*)"127.0.0.1", (char*)"8082");
 
 	printf("\nresult=%s", output.c_str());
-	
+
 }

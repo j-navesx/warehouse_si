@@ -11,6 +11,10 @@
 :- use_module(library(http/json_convert)).
 :- autoload(library(writef), [swritef/3]).
 
+:- http_handler(root(rtxengine   ), rtxengine , []).
+:- http_handler(root(hello       ), hello     , []).
+:- http_handler(root(rtx_get     ), rtx_get   , []).
+:- http_handler(root(prolog      ), rtx_get   , []).
 
 start_server(Port):-
     server(Port).

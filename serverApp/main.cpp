@@ -20,24 +20,16 @@ bool supervisionOperationState = false;
 
 
 
-void warehouseSupervisionThread(void* ignored) {
-	
+void warehouseSupervisionThread(void* ignored) {	
 	supervisionOperationState = true;
 	
-
-	while (supervisionOperationState) {
-		
+	while (supervisionOperationState) {		
 		monitoringOperation();
 		   //diagnosisOperation();
 		   //errorRecovering();
 		   //planningOperation(); 
-		dispatcherOperation();
-		   
-		
+		dispatcherOperation();		   		
 		sendPrologWebRequest((char*)"/rtx_get?query=forward", prologServer, prologPort);
-		
-
-
 		Sleep(1);
 	}
 }

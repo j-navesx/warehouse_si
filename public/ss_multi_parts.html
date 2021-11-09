@@ -1,5 +1,13 @@
 ﻿<html lang="en">
 <head>
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    <link rel="manifest" href="favicon/site.webmanifest">
+    <link rel="mask-icon" href="favicon/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+
     <title>Standard Storage</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
@@ -1284,6 +1292,7 @@
 
         $("#buttonR").click(function () {
             //move_delta_linear(threeObjects["conveyor"], 1, 0, 0);
+            //debugger;
             if (delta_x == 0 || delta_x == -SPEED) {
                 delta_x = +SPEED;
                 PORTS[4] = setBitValue(PORTS[4], 1, false);
@@ -2315,29 +2324,40 @@
             
             move_abs_linear(threeObjects["tower"], -140, 210, 80);            
             move_abs_linear(threeObjects["cage"], -155, 127, 80);
-            move_abs_linear(threeObjects["conveyor"], -190, 93, 55)
-            
+            move_abs_linear(threeObjects["conveyor"], -190, 93, 55)            
             move_abs_linear(threeObjects["conveyor_up"], -190, 98, 55)
-            
+            localStorage.clear();
+            //cacheMechanismPositions();
        });
 
-        function cacheMechanismPositions() {            
-            localStorage.setItem('tower_x',threeObjects["tower"].position.x);
-            
-            localStorage.setItem('tower_y',threeObjects["tower"].position.y);
-            localStorage.setItem('tower_z',threeObjects["tower"].position.z);
-            
-            localStorage.setItem('cage_x',threeObjects["cage"].position.x);
-            localStorage.setItem('cage_y',threeObjects["cage"].position.y);
-            localStorage.setItem('cage_z',threeObjects["cage"].position.z);
-            
-            localStorage.setItem('conveyor_x',threeObjects["conveyor"].position.x);
-            localStorage.setItem('conveyor_y',threeObjects["conveyor"].position.y);
-            localStorage.setItem('conveyor_z',threeObjects["conveyor"].position.z);
-            
-            localStorage.setItem('conveyor_up_x',threeObjects["conveyor_up"].position.x);
-            localStorage.setItem('conveyor_up_y',threeObjects["conveyor_up"].position.y);
-            localStorage.setItem('conveyor_up_z',threeObjects["conveyor_up"].position.z);
+        function cacheMechanismPositions() {
+            if (!isNaN(threeObjects["tower"].position.x))            
+                localStorage.setItem('tower_x',threeObjects["tower"].position.x);
+            if (!isNaN(threeObjects["tower"].position.y))
+                localStorage.setItem('tower_y', threeObjects["tower"].position.y);
+            if (!isNaN(threeObjects["tower"].position.z))
+                localStorage.setItem('tower_z',threeObjects["tower"].position.z);
+
+            if (!isNaN(threeObjects["cage"].position.x))
+                localStorage.setItem('cage_x', threeObjects["cage"].position.x);
+            if (!isNaN(threeObjects["cage"].position.y))
+                localStorage.setItem('cage_y', threeObjects["cage"].position.y);
+            if (!isNaN(threeObjects["cage"].position.z))
+                localStorage.setItem('cage_z',threeObjects["cage"].position.z);
+
+            if (!isNaN(threeObjects["conveyor"].position.x))
+                localStorage.setItem('conveyor_x', threeObjects["conveyor"].position.x);
+            if (!isNaN(threeObjects["conveyor"].position.y))
+                localStorage.setItem('conveyor_y', threeObjects["conveyor"].position.y);
+            if (!isNaN(threeObjects["conveyor"].position.z))
+                localStorage.setItem('conveyor_z',threeObjects["conveyor"].position.z);
+
+            if (!isNaN(threeObjects["conveyor_up"].position.x))
+                localStorage.setItem('conveyor_up_x', threeObjects["conveyor_up"].position.x);
+            if (!isNaN(threeObjects["conveyor_up"].position.y))
+                localStorage.setItem('conveyor_up_y', threeObjects["conveyor_up"].position.y);
+            if (!isNaN(threeObjects["conveyor_up"].position.z))
+                localStorage.setItem('conveyor_up_z',threeObjects["conveyor_up"].position.z);
             
             quantas=0;            
             for (var key in palletes) {
@@ -2361,7 +2381,10 @@
             
             localStorage.setItem("pallet_count", quantas);
             
-            var t = setTimeout(function(){ cacheMechanismPositions()  }, 500);			
+            var t = setTimeout(function () {
+                //console.log("cacheMechanismPositions()")
+                cacheMechanismPositions()
+            }, 500);
         }
         
       
@@ -2375,44 +2398,48 @@
 			}	*/
 
             
-            tower_x = localStorage.getItem('tower_x');
-            tower_y = localStorage.getItem('tower_y');
-            tower_z = localStorage.getItem('tower_z');
+            tower_x = parseFloat(localStorage.getItem('tower_x'));
+            tower_y = parseFloat(localStorage.getItem('tower_y'));
+            tower_z = parseFloat(localStorage.getItem('tower_z'));
             if( tower_x!==null && tower_y!==null && tower_z!==null)
                 move_abs_linear(threeObjects["tower"], tower_x, tower_y, tower_z);
             
-            cage_x = localStorage.getItem('cage_x');
-            cage_y = localStorage.getItem('cage_y');
-            cage_z = localStorage.getItem('cage_z');
+            cage_x = parseFloat(localStorage.getItem('cage_x'));
+            cage_y = parseFloat(localStorage.getItem('cage_y'));
+            cage_z = parseFloat(localStorage.getItem('cage_z'));
             if( cage_x!==null && cage_y!==null && cage_z!==null)
                 move_abs_linear(threeObjects["cage"], cage_x, cage_y, cage_z);
             
             
-            conveyor_x = localStorage.getItem('conveyor_x');
-            conveyor_y = localStorage.getItem('conveyor_y');
-            conveyor_z = localStorage.getItem('conveyor_z');
+            conveyor_x = parseFloat(localStorage.getItem('conveyor_x'));
+            conveyor_y = parseFloat(localStorage.getItem('conveyor_y'));
+            conveyor_z = parseFloat(localStorage.getItem('conveyor_z'));
             if( conveyor_x!==null && conveyor_y!==null && conveyor_z!==null)
                 move_abs_linear(threeObjects["conveyor"], conveyor_x, conveyor_y, conveyor_z);
                 
-            conveyor_up_x = localStorage.getItem('conveyor_up_x');
-            conveyor_up_y = localStorage.getItem('conveyor_up_y');
-            conveyor_up_z = localStorage.getItem('conveyor_up_z');
+            conveyor_up_x = parseFloat(localStorage.getItem('conveyor_up_x'));
+            conveyor_up_y = parseFloat(localStorage.getItem('conveyor_up_y'));
+            conveyor_up_z = parseFloat(localStorage.getItem('conveyor_up_z'));
             if( conveyor_up_x!==null && conveyor_up_y!==null && conveyor_up_z!==null)
                 move_abs_linear(threeObjects["conveyor_up"], conveyor_up_x, conveyor_up_y, conveyor_up_z);
             
             quantas=localStorage.getItem("pallet_count");   
             
             console.log("quantas="+quantas);
-            if(quantas===null)
-                return;
+            if (quantas === null) {
+                quantas = 0;
+            }
             for(i=0; i<quantas; i++) {
-                x = localStorage.getItem("pallet_x_"+i);
-                y = localStorage.getItem("pallet_y_"+i);
-                z = localStorage.getItem("pallet_z_"+i);
+                x = parseFloat(localStorage.getItem("pallet_x_"+i));
+                y = parseFloat(localStorage.getItem("pallet_y_"+i));
+                z = parseFloat(localStorage.getItem("pallet_z_" + i));
+
+                console.log("saved_pallet=" + Math.trunc(x) + " "
+                    + Math.trunc(y) + " " + Math.trunc(z));
                 
-                rx = localStorage.getItem("pallet_rx_"+i);
-                ry = localStorage.getItem("pallet_ry_"+i);
-                rz = localStorage.getItem("pallet_rz_"+i);
+                rx = parseFloat(localStorage.getItem("pallet_rx_"+i));
+                ry = parseFloat(localStorage.getItem("pallet_ry_"+i));
+                rz = parseFloat(localStorage.getItem("pallet_rz_"+i));
                                                 
                 texture  = localStorage.getItem("pallet_texture_"+i);
                 if(x!==null  &&  y!==null &&  z!==null &&  rx!==null &&  ry!==null &&  ry!==null && texture!==null)
