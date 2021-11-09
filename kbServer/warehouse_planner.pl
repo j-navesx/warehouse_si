@@ -57,22 +57,22 @@ strips([
  
 
 strips([
-act     [subplan(goto_y_in, [move_y_out, wait_until(y_is_at(1)), stop_y])]
-pre     [y_is_at(Yi), y_moving("Not Moving.")],
-add     [y_is_at(1)],
-del     [y_is_at(Yi)]    
+    act     [subplan(goto_y_in, [move_y_out, wait_until(y_is_at(1)), stop_y])],
+    pre     [y_is_at(Yi), y_moving("Not Moving.")],
+    add     [y_is_at(1)],
+    del     [y_is_at(Yi)]    
 ]).
 
 strips([
-    act     [subplan(goto_y_center, [move_y_in, wait_until(y_is_at(2)), stop_y])]
+    act     [subplan(goto_y_center, [move_y_in, wait_until(y_is_at(2)), stop_y])],
     pre     [y_is_at(Yi), y_moving("Not Moving.")],
     add     [y_is_at(2)],
     del     [y_is_at(Yi)]    
 ]).
 
 strips([
-act     [subplan(goto_y_out, [move_y_out, wait_until(y_is_at(3)), stop_y])]
-pre     [y_is_at(Yi), y_moving("Not Moving.")],
-add     [y_is_at(3)],
-del     [y_is_at(Yi)]    
+    act     [subplan(goto_y_out, [move_y_out, wait_until(y_is_at(3)), stop_y])],
+    pre     [y_is_at(Yi), y_moving("Not Moving.")],
+    add     [y_is_at(3)],
+    del     [y_is_at(Yi)]    
 ]).
