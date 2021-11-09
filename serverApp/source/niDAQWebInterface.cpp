@@ -11,7 +11,7 @@
  
 //#define _USE_REAL_KIT_  
 
-#define  MG_HTTP_FOLDER "C:/si/labwork1_week_06/public" 
+#define  MG_HTTP_FOLDER "C:/si/labwork1/public" 
 #define  MG_HTTP_PORT   "8081"
 
 
