@@ -1,2 +1,0 @@
-C:\si\labwork1\serverEngine\x64\Debug\serverEngine.exe
-C:\SI\labwork1\serverApp\x64\Debug\serverEngine.exe
