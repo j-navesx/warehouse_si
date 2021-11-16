@@ -8,7 +8,7 @@
 
 strips([
     act   [ subplan( goto_x_right(Xf), [move_x_right, wait_until(x_is_at(Xf)), stop_x]) ],
-    pre   [x_is_at(Xi), x_moving("Not moving.")  ],
+    pre   [x_is_at(Xi), x_moving(0)  ],
     add   [x_is_at(Xf)],
     del   [x_is_at(Xi)]
 ]):-
@@ -18,7 +18,7 @@ strips([
 
 strips([
     act   [ subplan( goto_x_left(Xf), [move_x_left, wait_until(x_is_at(Xf)), stop_x]) ],
-    pre   [x_is_at(Xi), x_moving("Not moving.")  ],
+    pre   [x_is_at(Xi), x_moving(0)  ],
     add   [x_is_at(Xf)],
     del   [x_is_at(Xi)]
 ]):-
@@ -32,7 +32,7 @@ strips([
 
 strips([
     act     [subplan( goto_z_up(Zf), [move_z_up, wait_unitl(z_is_at(Zf)), stop_z])],
-    pre     [z_is_at(Zi), z_moving("Not moving.")], 
+    pre     [z_is_at(Zi), z_moving(0)], 
     add     [z_is_at(Zf)],
     del     [z_is_at(Zi)]
 ]):-
@@ -42,7 +42,7 @@ strips([
 
 strips([
     act     [subplan( goto_z_down(Zf), [move_z_down, wait_unitl(z_is_at(Zf)), stop_z])],
-    pre     [z_is_at(Zi), z_moving("Not moving.")], 
+    pre     [z_is_at(Zi), z_moving(0)], 
     add     [z_is_at(Zf)],
     del     [z_is_at(Zi)]
 ]):-
@@ -58,7 +58,7 @@ strips([
 
 strips([
     act     [subplan(goto_y_in(Yf), [move_y_in, wait_until(y_is_at(Yf)), stop_y])],
-    pre     [y_is_at(Yi), y_moving("Not Moving.")],
+    pre     [y_is_at(Yi), y_moving(0)],
     add     [y_is_at(Yf)],
     del     [y_is_at(Yi)]    
 ]):-
@@ -68,10 +68,17 @@ strips([
 
 strips([
     act     [subplan(goto_y_out(Yf), [move_y_out, wait_until(y_is_at(Yf)), stop_y])],
-    pre     [y_is_at(Yi), y_moving("Not Moving.")],
+    pre     [y_is_at(Yi), y_moving(0)],
     add     [y_is_at(Yf)],
     del     [y_is_at(Yi)]    
 ]):-
     world(Wi, _Wf),
     member(y_is_at(Yi), Wi),
     Yi < Yf.
+
+% // TODO: WAIT FOR LEFT STATION BOX
+% // TODO: INPUT BOX FROM LEFT STATION
+% // TODO: INSERT BOX IN CELL
+% // TODO: REMOVE BOX FROM CELL
+% // TODO: OUTPUT BOX ON RIGHT STATION
+% // TODO: CLEAR RIGHT STATION

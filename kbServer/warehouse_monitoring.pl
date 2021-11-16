@@ -77,21 +77,21 @@ defrule([name: z_position],
 defrule([name: x_moving0],
     if port_value(4, Byte_val)  and (  1 is getbit(Byte_val, 0) )
     then (
-       assert(x_moving("Moving Right."))
+       assert(x_moving(1))
     )
  ).
 
 defrule([name: x_moving1],
     if port_value(4, Byte_val)  and (  1 is getbit(Byte_val, 1) )
     then (
-       assert(x_moving("Moving Left."))
+       assert(x_moving('-1'))
     )
  ).
 
 defrule([name: x_moving2],
     if port_value(4, Byte_val)  and (  0 is getbit(Byte_val, 0) ) and (  0 is getbit(Byte_val, 1) )
     then (
-       assert(x_moving("Not Moving."))
+       assert(x_moving(0))
     )
  ).
 
@@ -102,21 +102,21 @@ defrule([name: x_moving2],
 defrule([name: y_moving0],
     if port_value(4, Byte_val)  and (  1 is getbit(Byte_val, 4) )
     then (
-       assert(y_moving("Moving In."))
+       assert(y_moving(1))
     )
  ).
 
 defrule([name: y_moving1],
     if port_value(4, Byte_val)  and (  1 is getbit(Byte_val, 3) )
     then (
-       assert(y_moving("Moving Out."))
+       assert(y_moving('-1'))
     )
  ).
 
 defrule([name: y_moving2],
     if port_value(4, Byte_val)  and (  0 is getbit(Byte_val, 4) ) and (  0 is getbit(Byte_val, 3) )
     then (
-       assert(y_moving("Not Moving."))
+       assert(y_moving(0))
     )
  ).
 
@@ -127,21 +127,21 @@ defrule([name: y_moving2],
 defrule([name: z_moving0],
     if port_value(4, Byte_val)  and (  1 is getbit(Byte_val, 5) )
     then (
-       assert(z_moving("Moving Up."))
+       assert(z_moving(1))
     )
  ).
 
 defrule([name: z_moving1],
     if port_value(4, Byte_val)  and (  1 is getbit(Byte_val, 6) )
     then (
-       assert(z_moving("Moving Down."))
+       assert(z_moving('-1'))
     )
  ).
 
 defrule([name: z_moving2],
     if port_value(4, Byte_val)  and (  0 is getbit(Byte_val, 5) ) and (  0 is getbit(Byte_val, 6) )
     then (
-       assert(z_moving("Not Moving."))
+       assert(z_moving(0))
     )
  ).
 
