@@ -91,16 +91,16 @@
 
 
                         <!--
-                          <button type="button" class="btn btn-success btn-sm" id="mostra_panel">Mostrar panel</button>
-                          <button type="button" class="btn btn-success btn-sm" id="esconde_panel">Esconde panel</button>
-                        -->
+              <button type="button" class="btn btn-success btn-sm" id="mostra_panel">Mostrar panel</button>
+              <button type="button" class="btn btn-success btn-sm" id="esconde_panel">Esconde panel</button>
+            -->
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-sm-5" >
+                    <div class="col-sm-5">
                         <div style="height:100%;">
-                            
-                            <iframe id="idFrameContent" src="HMI-monitoring_dispatcher.html" frameborder="0" style="overflow:hidden;height:60vh;width:35vw" ></iframe>
+
+                            <iframe id="idFrameContent" src="HMI-monitoring_dispatcher.html" frameborder="0" style="overflow:hidden;height:60vh;width:35vw"></iframe>
                         </div>
                     </div>
                     <div class="col-sm-7">
@@ -110,6 +110,16 @@
                     </div>
 
                 </div>
+                <!-- HERE -->
+                a
+                <div class="row" style="border: solid blue 1px; padding: 5px; margin: 5px ">
+
+                    <div class="col-sm1"><label id="xLabel" /></div>
+                    <div class="col-sm1"><label id="yLabel" /></div>
+                    <div class="col-sm1"><label id="zLabel" /></div>
+                    <div class="col-sm1"><label id="cageLabel" /></div>
+                </div>
+
             </div>
         </div>
 
@@ -156,6 +166,21 @@
 
 
     <script>
+        // HERE
+        function tick() {
+            ajax_post_request("/rtx_get", { "query": "read_sensor_values" }, function (result) {
+                console.log("read_sensor_values: " + result);
+                var jsObj = JSON.parse(result);
+                $("#xLabel").text("xMov: " + jsObj.x);
+                //complete for yLabel and so on...
+
+            });
+
+            setTimeout(tick, 100);
+        }
+
+        setTimeout(tick, 100);
+
 
         $(document).ready(function () {
 
