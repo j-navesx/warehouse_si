@@ -16,7 +16,7 @@
         {
             "label": "run project",
             "type": "shell",
-            "command": "swipl ./kbServer/warehouse_config.pl ./kbServer/warehouse_dispatcher.pl ./kbServer/warehouse_monitoring.pl ./kbServer/warehouse_supervisor.pl",
+            "command": "swipl ./kbServer/warehouse_config.pl ./kbServer/warehouse_dispatcher.pl ./kbServer/warehouse_monitoring.pl ./kbServer/warehouse_supervisor.pl ./kbServer/warehouse_planner.pl ./kbServer/warehouse_strips.pl",
             "problemMatcher": [],
             "group": {
                 "kind": "build",
