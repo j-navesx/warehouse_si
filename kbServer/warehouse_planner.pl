@@ -76,8 +76,25 @@ strips([
     member(y_is_at(Yi), Wi),
     Yi < Yf.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                          Left Station                                %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % // TODO: WAIT FOR LEFT STATION BOX
+strips([
+    act     [subplan(receive, [move_left_station_in, wait_until(part_at_left_station), stop_left_station])],
+    pre     [left_station_moving(0)],
+    add     [part_at_left_station],
+    del     []    
+]).
+
 % // TODO: INPUT BOX FROM LEFT STATION
+strips([
+    act     [subplan(get_box, [move_y_in, wait_unitl(y_is_at(1)), move_z_up, wait_unitl(z_is_at(1.5)), move_y_out, wait_unitl(y_is_at(2))])],
+    pre     [left_station_moving(0), part_at_left_station, x_is_at(1), z_is_at(1), y_is_at(2)],
+    add     [part_in_cage],
+    del     [part_at_left_station]    
+]).
 % // TODO: INSERT BOX IN CELL
 % // TODO: REMOVE BOX FROM CELL
 % // TODO: OUTPUT BOX ON RIGHT STATION
