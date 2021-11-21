@@ -19,6 +19,13 @@ all_storage_states([
     part_at_right_station
 ]).
 
+load_all_storage_states(List):-
+    all_storage_states(States),
+    findall( State, (
+                 member(State, States),
+                 State
+             ), List).
+
 % each position represented by tuple
 % (X_Position, Port_Number,Bit_position, Bit_value)
 % int pp[10] = { 0,0,0,0,0,0,0,0,1,1 };

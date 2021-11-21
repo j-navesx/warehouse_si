@@ -64,14 +64,23 @@ forward:-
 forward(FiredRules):-
     findall( (Name, P),
     (
-      pick_a_rule(name:Name, priority:P, description:_D, _IfCond, _Conclusions, _ElseIfCond, _ElseIfConclusions, _ElseConclusions)          ),
-    L),
+         pick_a_rule(name:Name, priority:P, description:_D, _IfCond, _Conclusions, _ElseIfCond, _ElseIfConclusions, _ElseConclusions) ,
+         Name\=not_named
+    ),L),
+    list_to_set(L, Set),
+    ord_subtract(L, Set, Sub),
+    tell_if_has_repeated_names(Sub),
+
     sort(2, @>=, L, SortedRules),
     do_forward(SortedRules,[], FiredRules_aux),
     reverse(FiredRules_aux, FiredRules).
 
 
+tell_if_has_repeated_names([]):-
+    !.
 
+tell_if_has_repeated_names([X|List]):-
+    log_nl(rules_with_repeated_name([X|List])).
 
 
 do_forward(SortedRules,PreviousFiredRules, FinalFiredRules):-
@@ -136,15 +145,13 @@ print_fired_rule(_Name, _Conditions, _Conclusions):-
 pick_a_rule(name:N, priority:P, description:D, IfCond, Conclusions, ElseIfCond, ElseIfConclusions, ElseConclusions):-
   (
      (defrule(Attributes, if IfCond then Concl elseif ElseIfCond then ElseIfConcl else ElseConcl));
-     (defrule(Attributes, if IfCond then Concl elseif ElseIfCond then ElseIfConcl),
-         ElseConcl=[]);
-     (defrule(Attributes, if IfCond then Concl else ElseConcl),
-         ElseIfCond=false, ElseIfConcl=[]  );
-     (defrule(Attributes, if IfCond then Concl ),
-         ElseIfCond=false, ElseIfConcl=[], ElseConcl=[]  )
+     (defrule(Attributes, if IfCond then Concl elseif ElseIfCond then ElseIfConcl),  ElseConcl=[]);
+     (defrule(Attributes, if IfCond then Concl else ElseConcl),    ElseIfCond=false, ElseIfConcl=[]  );
+     (defrule(Attributes, if IfCond then Concl ),   ElseIfCond=false, ElseIfConcl=[], ElseConcl=[]  )
   ),
 
-  (   (member(name:N, Attributes) -> true); (N=not_named, format(string(S),'rule with condition ~w must have name.',[IfCond]), throw_console(S))   ),%N='no_name_rule'),%(get_time(T), T2 is integer(T), format(atom(N),'rule_~w',[T2]))   ),
+  (   (member(name:N, Attributes) -> true); (N=not_named,format(string(S),'rule with condition ~w must have name.',[IfCond]), throw_console(S))   ),
+  %(   (member(name:N, Attributes) -> true); (N=not_named   ) ),
   (   member(priority:P, Attributes) -> true; P=0),
   (   member(description:D, Attributes) -> true; D=''),
   (    is_list(Concl)            -> Conclusions = Concl;           Conclusions = [Concl]),
