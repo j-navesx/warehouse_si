@@ -98,19 +98,24 @@ strips([
 
 % // TODO: INSERT BOX IN CELL
 strips([
-    act     [subplan(place(X,Z), [move_y_in, wait_unitl(y_is_at(3)), move_z_down, wait_until(z_is_at(Z-0.5)), move_y_out, wait_unitl(y_is_at(2))])],
+    act     [subplan(place(X,Z), [move_y_in, wait_unitl(y_is_at(3)), move_z_down, wait_until(z_is_at(Znext)), move_y_out, wait_unitl(y_is_at(2))])],
     pre     [part_in_cage, x_is_at(X), z_is_at(Z)],
     add     [cell(X,Z)],
     del     [part_in_cage]    
-]).
+]):- /* world(Wi, _Wf),
+     member(z_is_at(Z),Wi), */ 
+     Znext is Z - 0.5.
+
 
 % // TODO: REMOVE BOX FROM CELL
 strips([
     act     [subplan(remove(X,Z), [move_y_in, wait_unitl(y_is_at(3)), move_z_up, wait_unitl(z_is_at(Z)), move_y_out, wait_unitl(y_is_at(2))])],
-    pre     [cell(X,Z), x_is_at(X), z_is_at(Z-0.5)],
+    pre     [cell(X,Z), x_is_at(X), z_is_at(Znext)],
     add     [part_in_cage],
     del     [cell(X,Z)]    
-]).
+]):- /* world(Wi, _Wf),
+     member(z_is_at(Z),Wi), */
+     Znext is Z - 0.5.
 
 % // TODO: OUTPUT BOX ON RIGHT STATION
 strips([
@@ -125,4 +130,11 @@ strips([
     pre     [right_station_moving(0)],
     add     [],
     del     [part_at_right_station]    
+]).
+
+strips([
+    act     [xpto],
+    pre     [part_at_left_station, cell(X,Z)],
+    add     [colocar(X,Z)],
+    del     [part_at_left_station] 
 ]).

@@ -82,8 +82,8 @@
             var query = `solve(${goals}, ${systemStates}, WorldFinal, Plan), `;
             // use format to obtain result in JSON format 
             var query_cont = 'format(\'{"wf":"~w", "plan":"~w"}\', [WorldFinal, Plan])';
-            var query_final = query + query_cont;
-            ajax_post_request("/rtx_get", { "query": query_final }, function (result) {
+            var query_final = query + query_cont + ',!';
+            ajax_post_request("/rtx_get", { "query": query_final}, function (result) {
                 console.log("query result = " + result.trim());
                 var obtainedPlan = JSON.parse(result);
                 $('#idPlan').val(obtainedPlan.plan);
