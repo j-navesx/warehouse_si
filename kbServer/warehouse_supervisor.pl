@@ -10,13 +10,13 @@
 
 read_sensor_values:-
         % output as JSON object
-        writeln('{'),
+        writeln("{"),
         get_state_value(part_in_cage     , VCage, 1,  0    ),   format('"cage":"~w",~n' ,[VCage])  ,
         get_state_value(x_is_at(X)       , X,     X, 'N.A.'),   format('"x"   :"~w",~n',[X])      ,
         get_state_value(z_is_at(Z)       , Z,     Z, 'N.A.'),   format('"z"   :"~w" ~n',[Z])      ,
         %don't put final comma at the last one......
         % TO BE COMPLETED
-        writeln('}').
+        writeln("}").
     
     
     get_state_value(Term, Variable, ValueOn, _ValueOff):-

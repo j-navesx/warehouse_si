@@ -29,6 +29,12 @@
                             <td><button id="x-left-step"  onclick="moveXStepClick(-1);" type="button" class="btn btn-success btn-sm btn-outline-primary py-0">x-Left-Step</button></td>
                             <td><button id="x-right-step" onclick="moveXStepClick(+1);" type="button" class="btn btn-success btn-sm btn-outline-primary py-0">x-Right-Step</button></td>
                         </tr>
+                        <tr>
+                            <td><button id="z-up-step" onclick="moveZStepClick(+1);" type="button" class="btn btn-success btn-sm btn-outline-primary py-0">z-Up-Step</button></td>
+                            <td><button id="z-down-step" onclick="moveZStepClick(-1);" type="button" class="btn btn-success btn-sm btn-outline-primary py-0">z-Down-Step</button></td>
+                            <td><button id="y-in-step" onclick="moveYStepClick(+1);" type="button" class="btn btn-success btn-sm btn-outline-primary py-0">y-In-Step</button></td>
+                            <td><button id="y-out-step" onclick="moveYStepClick(-1);" type="button" class="btn btn-success btn-sm btn-outline-primary py-0">y-Out-Step</button></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -51,6 +57,30 @@
             // move by each position
             // first it must leave the current position, then waits for the next position, ...
             var plan = `assert(plan(step_x,[${query},wait_until(not(x_is_at(_))),wait_until(x_is_at(_)), stop_x]))`;
+
+            ajax_post_request("/rtx_get", { "query": plan }, function (result) {
+                console.log("query result = " + result.trim());
+            });
+        }
+        function moveZStepClick(direction) {
+            var queryArray = ["move_z_down", "", "move_z_up"];
+            var query = queryArray[direction + 1];
+
+            // move by each position
+            // first it must leave the current position, then waits for the next position, ...
+            var plan = `assert(plan(step_z,[${query},wait_until(not(z_is_at(_))),wait_until(z_is_at(_)), stop_z]))`;
+
+            ajax_post_request("/rtx_get", { "query": plan }, function (result) {
+                console.log("query result = " + result.trim());
+            });
+        }
+        function moveYStepClick(direction) {
+            var queryArray = ["move_y_out", "", "move_y_in"];
+            var query = queryArray[direction + 1];
+
+            // move by each position
+            // first it must leave the current position, then waits for the next position, ...
+            var plan = `assert(plan(step_y,[${query},wait_until(not(y_is_at(_))),wait_until(y_is_at(_)), stop_y]))`;
 
             ajax_post_request("/rtx_get", { "query": plan }, function (result) {
                 console.log("query result = " + result.trim());
