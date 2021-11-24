@@ -111,7 +111,7 @@
 
                 </div>
                 <!-- HERE -->
-                a
+                
                 <div class="row" style="border: solid blue 1px; padding: 5px; margin: 5px ">
 
                     <div class="col-sm1"><label id="xLabel" /></div>
@@ -171,7 +171,10 @@
             ajax_post_request("/rtx_get", { "query": "read_sensor_values" }, function (result) {
                 console.log("read_sensor_values: " + result);
                 var jsObj = JSON.parse(result);
-                $("#xLabel").text("xMov: " + jsObj.x);
+                $("#xLabel").text("xPos: " + jsObj.x);
+                $("#yLabel").text("yPos: " + jsObj.y);
+                $("#zLabel").text("zPos: " + jsObj.z);
+                $("#cageLabel").text("partInCage: " + jsObj.cage);
                 //complete for yLabel and so on...
 
             });
