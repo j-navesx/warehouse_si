@@ -14,6 +14,100 @@ defrule([name:start_rule, priority:1000],
      )
 ).
 
+%%%%%%%%%%%%%%%%%%%%%
+% Aula 23/11
+%%%%%%%%%%%%%%%%%%%%%
+
+make_most_generic_term(Term, GenericTerm):-
+   functor(Term, Name, Arity),
+   findall(_, between(1, Arity, _), L),
+   TermAsList = [Name | L],
+   GenericTerm =.. TermAsList.
+
+% TIME ON
+defrule([name: timing_events_rule_on],
+   if all_storage_states(States) and
+     member(State, States)       and
+     State                       and
+     not(time_on(_, State))
+     then [
+        make_most_generic_term(State, GenericState),
+        retractall(time_on(_, GenericState)),
+        get_time(Time),
+        assert(time_on(Time, State))
+]).
+
+% TIME_OFF 
+defrule([name: timing_events_rule_off],
+   if time_on(_,State)           and
+     not(State)                  and
+     not(time_off(_, State))
+     then [
+        make_most_generic_term(State, GenericState),
+        retractall(time_off(_, GenericState)),
+        get_time(Time),
+        assert(time_off(Time, State))
+]).
+
+%X-BETWEEN ON
+defrule([name: x_between_rule_on],
+if    not(x_between(_,_, _))          and
+      not(x_is_at(_))                 and
+      time_off(_, x_is_at(Xi))        and
+      x_moving(MovDirection)
+      and (MovDirection \= 0)         then
+      [
+          Xf is Xi + MovDirection,
+          get_time(Tstamp),
+          assert(x_between(Tstamp,Xi, Xf))
+      ]).
+
+%X-BETWEEN OFF
+defrule([name: x_between_rule_off],
+if    x_between(_,_,_) and x_is_at(_) then [
+         retract(x_between(_,_, _))
+]).
+
+%PREVIOUS_STATE -> mimics TIME_OFF (usar caso não queiramos trabalhar com o TIME_OFF)
+defrule([name: previous_state_rule],
+if
+     time_off(Toff,State)          and
+     not(previous_state(_, State))
+       then [
+          make_most_generic_term(State, GenericState),
+          retractall(previous_state(_, GenericState)),
+          assert(previous_state(Toff,State))
+]).
+
+%YELLOW ALERT RULE
+defrule([name: alert_x_rule],
+   if  user_pressed_yellow_button and                              % relevant event/state
+       % put here other relevant conditions 
+       not(alert(_ID, _TS, yellow_alert, _Descr, pending)) % avoid repetitions
+   then [ 
+        generate_unique_id(ID),
+        get_time(TimeStamp),
+        assert(alert(ID, TimeStamp, yellow_alert, 'user pressed yellow button', pending)  ) %,      
+        %log_nl(alert(ID, TimeStamp, yellow_alert, 'user pressed yellow button', pending) )
+]). 
+
+:- dynamic user_pressed_yellow_button/0. % set it dynamic to avoid an “Rule error” 
+
+%generate json array of the current alerts.
+get_alerts_json(Status):-
+   % output as JSON object
+   findall( StringJSON,
+    (
+       alert(ID, TimeStamp, Reference, Explanation,  Status),
+       format_time(string(Time),"%T",TimeStamp),
+       format(atom(StringJSON), '{"id":"~w", "time":"~w", "reference":"~w", "explanation":"~w",  "status":"~w"}',
+                              [ID, Time, Reference, Explanation,  Status])
+
+    ),List),
+   write_term(List,[]).
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                      X POSITION                      %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
