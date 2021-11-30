@@ -70,6 +70,8 @@
                     <li><a href="#" id="idProlog" class="navegar">Interactive Prolog </a></li>
                     <li><a href="#" id="idMonitoringAndDispatcher" class="navegar">Monitoring and Dispatcher</a></li>
                     <li><a href="#" id="idPlanner" class="navegar">Planner module</a></li>
+                    <li><a href="#" id="idAlerts" class="navegar">Alerts</a></li>
+                    <li><a href="#" id="idFailures" class="navegar">Failures</a></li>
                     <li><a href="#" id="idAlarms" class="navegar">Alarms</a></li>
                     <li><a href="#" id="idAnalytics" class="navegar">Analytics</a></li>
                     <li><a href="#" id="idAbout" class="navegar">About</a></li>
@@ -242,6 +244,19 @@
             });
 
             //showAlert("Erro no armazem", "bg-secondary");
+            $("#idAlerts").click(function () {
+                var e = document.getElementById("idFrameContent");
+                e.src = "HMI-alerts.html";
+                e.style.transform = "scale(0.9,0.9)";
+            });
+
+            //showFailure("Falha no armazem", "bg-secondary");
+            $("#idFailures").click(function () {
+                var e = document.getElementById("idFrameContent");
+                e.src = "HMI-failures.html";
+                e.style.transform = "scale(0.9,0.9)";
+            });
+
 
         });
     </script>

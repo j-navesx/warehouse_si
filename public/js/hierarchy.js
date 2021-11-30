@@ -9,6 +9,10 @@ function add_child(threeParent, threeChild) {
         //alert('aaa');
     }
     threeParent.userData.children[threeChild.userData.name] = threeChild;
+    threeChild.userData.parent = threeParent
+    threeChild.userData.offset_X = threeChild.position.x - threeParent.position.x;
+    threeChild.userData.offset_Y = threeChild.position.y - threeParent.position.y;
+    threeChild.userData.offset_Z = threeChild.position.z - threeParent.position.z;
     //alert(threeParent.userData.name + ' ---> ' +  threeChild.userData.name);
    // console.log(threeParent.userData.children);
 }
@@ -44,6 +48,8 @@ function move_delta_linear(threeObject, delta_x, delta_y, delta_z) {
     threeObject.position.x = x + parseFloat(delta_x);
     threeObject.position.y = y + parseFloat(delta_y);
     threeObject.position.z = z + parseFloat(delta_z);
+    
+    
 
     /*
     if (isNaN(threeObject.position.x)) {

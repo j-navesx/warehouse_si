@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <title>SI 2021</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+
+
+    <script src="dashboard.js?turn=3"></script>
+    <link rel="stylesheet" href="dashboard.css">
+    <style>
+        .longTextCss {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            max-width: 50px;
+            word-wrap: break-word;
+        }
+
+            .longTextCss:hover {
+                cursor: pointer;
+            }
+    </style>
+</head>
+<body style="background: rgb(234, 241, 234);">
+    <!– CONTENT HERE-->
+    <div class="modal" id="partialViewModal" tabindex="-1" role="dialog" aria-labelledby="partialViewModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    Value:
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="document.getElementById('partialViewModal').style.display = 'none';">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="modalDetails" style="word-wrap: break-word;">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    refreshFailuresTable();
+
+    setInterval(function () {
+        //refreshAlertsTable();
+        refreshFailuresTable();
+    }, 1000);
+
+    /* THE OTHER JAVASCRIPT FUNCTIONS HERE */
+
+    function refreshFailuresTable() {
+        ajax_post_request("/rtx_get", { "query": "get_failures_json(pending)" }, function (result) {
+            //console.log("query result = " + result.trim());
+
+            var jsObj = JSON.parse(result);
+            //$("#xLabel").text("xMov: " + jsObj.x);
+            //console.log("query result = " + jsObj);
+            var lines = ""
+            for (var key in jsObj) {
+                if (jsObj.hasOwnProperty(key)) {
+                    var o = jsObj[key];
+                    lines += `<tr>
+                                    <td>${o.id}</td>
+                                    <td>${o.time}</td>
+                                    <td>${o.reference}</td>
+                                    <td class="longTextCss" onclick="showDetails('${o.explanation}');">${o.explanation}</td>
+                                    <td class="longTextCss" onclick="showDetails('${o.plan}');">${o.plan}</td>
+                                    <td>${o.status}</td>
+                                    <td>
+                                      <button class="button tableButton" onclick="resolve(${o.id});">Execute</button>
+                                    </td>
+                                 </tr>`;
+                }
+            }
+            document.getElementById("idTableBody").innerHTML = lines;
+        });
+    }
+
+    function showDetails(textDetails) {
+        //alert(textDetails);
+        $("#modalDetails").text(textDetails);
+        $("#partialViewModal").modal("show");
+    }
+
+    function resolve(id) {
+        var query = `resolve_selected_failure(${id})`;
+        ajax_post_request("/rtx_get", { "query": query }, function (result) {
+            refreshFailuresTable();
+        });
+    }
+
+</script>
+</html>

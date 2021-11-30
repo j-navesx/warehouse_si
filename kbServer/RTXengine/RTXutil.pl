@@ -3,6 +3,15 @@
 :-dynamic rtx/1.
 
 
+test_with_catch(RuleName, Goal, DefaultResult):-
+    catch(Goal, error(Error,Context),
+          (
+               log_format('Error in rule named ~w -> error(~w,~w) : ~n',[RuleName, Error,Context])   ,
+               DefaultResult
+          )
+    ).
+
+
 is_undefined(Term):-
     not(is_defined(Term)).
 

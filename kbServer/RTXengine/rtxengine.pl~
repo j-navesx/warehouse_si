@@ -32,11 +32,10 @@
 :-dynamic diagnose/1. % diagnose(Goal).
 :-dynamic action/1.
 
-:-dynamic failure/4.  % failure(ID,Severity,  goal(Goal), Description).
 :-dynamic sequence_task/3.
 
 
-
+/*
 defrule([name: sequence_not_empty],
     if sequence_task(ID,Type,[(PreCond,Goal)|Sequence]) and PreCond
     then (
@@ -56,7 +55,7 @@ defrule([name: sequence_empty],
        retract(sequence_task(ID,_,[]))
     )
  ).
-
+*/
 
 forward:-
     forward(_ListOfFiredRules).
@@ -64,14 +63,23 @@ forward:-
 forward(FiredRules):-
     findall( (Name, P),
     (
-      pick_a_rule(name:Name, priority:P, description:_D, _IfCond, _Conclusions, _ElseIfCond, _ElseIfConclusions, _ElseConclusions)          ),
-    L),
+         pick_a_rule(name:Name, priority:P, description:_D, _IfCond, _Conclusions, _ElseIfCond, _ElseIfConclusions, _ElseConclusions) ,
+         Name\=not_named
+    ),L),
+    list_to_set(L, Set),
+    ord_subtract(L, Set, Sub),
+    tell_if_has_repeated_names(Sub),
+
     sort(2, @>=, L, SortedRules),
     do_forward(SortedRules,[], FiredRules_aux),
     reverse(FiredRules_aux, FiredRules).
 
 
+tell_if_has_repeated_names([]):-
+    !.
 
+tell_if_has_repeated_names([X|List]):-
+    log_nl(rules_with_repeated_name([X|List])).
 
 
 do_forward(SortedRules,PreviousFiredRules, FinalFiredRules):-
@@ -87,7 +95,7 @@ forward_step(SortedRules, PreviousFiredRules,NewFiredRule):-
     pick_a_rule(name:Name, priority:Priority, description:_Description, IfConditions, Conclusions, ElseIfCond, ElseIfConclusions, ElseConclusions),
     %test conditions
     (
-       (   catch(IfConditions, _Exception, false),
+       (   test_with_catch(Name, IfConditions, false),
            \+ member((if(Name), IfConditions, _),      PreviousFiredRules),
            perform_conclusions(Name,Conclusions),
            print_fired_rule(if(Name), IfConditions, Conclusions),
@@ -98,8 +106,8 @@ forward_step(SortedRules, PreviousFiredRules,NewFiredRule):-
        (
            length(ElseIfConclusions, Len),
            Len>0,
-           catch(not(IfConditions), _Exception1, true),
-           catch(ElseIfCond, _Exception2, false),
+           test_with_catch(Name, not(IfConditions),  true),
+           test_with_catch(Name, ElseIfCond,        false),
            \+ member((elseif(Name), ElseIfCond, _),      PreviousFiredRules),
            perform_conclusions(Name,ElseIfConclusions),
            print_fired_rule(elseif(Name), ElseIfCond, ElseIfConclusions),
@@ -111,8 +119,8 @@ forward_step(SortedRules, PreviousFiredRules,NewFiredRule):-
            length(ElseConclusions, Len),
            Len>0,
            %catch(ElseConds, _Exception, false),
-           catch(not(IfConditions), _Exception1, true),
-           catch(not(ElseIfCond), _Exception2, true),
+           test_with_catch(Name, not(IfConditions),  true),
+           test_with_catch(Name, not(ElseIfCond),    true),
            \+ member((else(Name), true, _ ), PreviousFiredRules),
            perform_conclusions(Name, ElseConclusions),
            print_fired_rule(else(Name), true , ElseConclusions),
@@ -126,7 +134,7 @@ forward_step(SortedRules, PreviousFiredRules,NewFiredRule):-
 
 print_fired_rule(Name, Conditions, Conclusions):-
     debug_info,
-    format('Executed: ~w~n       conditions: ~w~n       conclusions: ~w~n',[Name, Conditions, Conclusions]).
+    log_format('Executed: ~w~n       conditions: ~w~n       conclusions: ~w~n',[Name, Conditions, Conclusions]).
 
 print_fired_rule(_Name, _Conditions, _Conclusions):-
     \+ debug_info.
@@ -136,22 +144,20 @@ print_fired_rule(_Name, _Conditions, _Conclusions):-
 pick_a_rule(name:N, priority:P, description:D, IfCond, Conclusions, ElseIfCond, ElseIfConclusions, ElseConclusions):-
   (
      (defrule(Attributes, if IfCond then Concl elseif ElseIfCond then ElseIfConcl else ElseConcl));
-     (defrule(Attributes, if IfCond then Concl elseif ElseIfCond then ElseIfConcl),
-         ElseConcl=[]);
-     (defrule(Attributes, if IfCond then Concl else ElseConcl),
-         ElseIfCond=false, ElseIfConcl=[]  );
-     (defrule(Attributes, if IfCond then Concl ),
-         ElseIfCond=false, ElseIfConcl=[], ElseConcl=[]  )
+     (defrule(Attributes, if IfCond then Concl elseif ElseIfCond then ElseIfConcl),  ElseConcl=[]);
+     (defrule(Attributes, if IfCond then Concl else ElseConcl),    ElseIfCond=false, ElseIfConcl=[]  );
+     (defrule(Attributes, if IfCond then Concl ),   ElseIfCond=false, ElseIfConcl=[], ElseConcl=[]  )
   ),
 
-  (   (member(name:N, Attributes) -> true); (N=not_named, format(string(S),'rule with condition ~w must have name.',[IfCond]), throw(S))   ),%N='no_name_rule'),%(get_time(T), T2 is integer(T), format(atom(N),'rule_~w',[T2]))   ),
+  (   (member(name:N, Attributes) -> true); (N=not_named,format(string(S),'rule with condition ~w must have name.',[IfCond]), throw_console(S))   ),
+  %(   (member(name:N, Attributes) -> true); (N=not_named   ) ),
   (   member(priority:P, Attributes) -> true; P=0),
   (   member(description:D, Attributes) -> true; D=''),
   (    is_list(Concl)            -> Conclusions = Concl;           Conclusions = [Concl]),
   (    is_list(ElseConcl)        -> ElseConclusions = ElseConcl; ElseConclusions = [ElseConcl]),
   (    is_list(ElseIfConcl)        -> ElseIfConclusions = ElseIfConcl; ElseIfConclusions = [ElseIfConcl]).
 
-
+/*
 perform_conclusions(_,[]).
 
 perform_conclusions(RuleName, [Conc|Conclusions]):-
@@ -159,10 +165,55 @@ perform_conclusions(RuleName, [Conc|Conclusions]):-
     %format('executing goal: ~w~n',[Conc]),
     (   ((Conc) -> true);
         format(string(S),'FATAL: rule: ~w failed in conclusion term: [~w]',[RuleName, Conc]),
-        throw(S)
+        throw_console(S)
+    ),
+    perform_conclusions(RuleName,Conclusions).
+*/
+
+/*
+perform_conclusions(RuleName, [C|Conclusions]):-
+    perform_conclusions(RuleName, [C|Conclusions]),
+    !.
+
+perform_conclusions(RuleName, Conclusions):-
+    catch( (Conclusions, Conclusions_result =true), Caught_exception, Conclusions_result =false),
+    show_exception(Caught_exception),
+    show_execution_result(RuleName,Conclusions, Conclusions_result).
+
+show_exception(Exception):-
+    ground(Exception),
+    log_nl(Exception),
+    !
+    ;
+    true.
+
+
+show_execution_result(_RuleName,_Conclusions, true ).
+show_execution_result( RuleName, Conclusions, false):-
+    format(string(S),'FATAL: rule: ~w failed in conclusion term: [~w]',[RuleName,Conclusions]),
+    throw_console(S).
+
+*/
+
+perform_conclusions(_,[]).
+
+perform_conclusions(RuleName, [Conc|Conclusions]):-
+    %dinamize_conclusion(Conc),
+    %format('executing goal: ~w~n',[Conc]),
+    (   (test_with_catch(RuleName, Conc,false) -> true);
+        log_format('FATAL: rule ~w failed in conclusion term ~w~n',[RuleName, Conc])
     ),
     perform_conclusions(RuleName,Conclusions).
 
+
+
+test_with_catch(RuleName, Goal, DefaultResult):-
+    catch(Goal, error(Error,Context),
+          (
+               log_format('Error in rule named ~w -> error(~w,~w) : ~n',[RuleName, Error,Context])   ,
+               DefaultResult
+          )
+    ).
 
 
 and(A,B):-
@@ -198,7 +249,7 @@ backward_2(Goal, PreviousRules, FiredRules):-
        (
            has_goal(Goal, Conclusions) -> RuleTerm= fired(if(Name), Goal, because_of(Conditions)), Cond = Conditions ;
            has_goal(Goal, ElseIfConclusions) -> RuleTerm= fired(elseif(Name), Goal, because_of(ElseIfCond)), Cond = ElseIfCond;
-           has_goal(Goal, ElseConclusions) -> RuleTerm= fired(else(Name), Goal, because_of(not(Conditions), not(ElseIfCond))), Cond= (not(Conditions) and not(ElseIfCond))
+           has_goal(Goal, ElseConclusions) -> RuleTerm= fired(else(Name), Goal, because_of(not(Conditions) and not(ElseIfCond))), Cond= (not(Conditions) and not(ElseIfCond))
        ),
        %has_goal(Goal, Conclusions),
        % RuleTerm= fired(Name, Goal, because_of(Conditions)),

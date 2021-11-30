@@ -32,7 +32,7 @@ solve(Goals, W0, W1, Plan):-
     retractall(goals(_)),
     assert(goals(Goals)),
     solve(Goals, W0, W1, [], Plan_nested),
-    % ISTO Nï¿½O DEVERIA SER NECESSARIO
+    % ISTO NÂO DEVERIA SER NECESSARIO
     holds(Goals, W1),
     flatten(Plan_nested, Plan).
 
@@ -52,7 +52,7 @@ solve(Goals,W0, W3, Forbidden, Plan):-
     % get_a_goal(Goal, Goals, Remaining_goals),
     get_next_goal(Goal, Goals, Remaining_goals),
 
-    \+ holds( [Goal], W0),   % passar ï¿½ frente dum estado ja satisfeito
+    \+ holds( [Goal], W0),   % passar à frente dum estado ja satisfeito
 
     %writeln(handling_goal(Goal, W0)),
 
@@ -91,11 +91,26 @@ solve(Goals,W0, W3, Forbidden, Plan):-
 
 % there is magic in this operator...
 % It does the job... wish understand why!
-unify_Pre_with_World([], _) :- true.
-unify_Pre_with_World([E|R], Set) :-
+unify_Pre_with_World([], _) => true.
+unify_Pre_with_World([E|R], Set) =>
     (   memberchk(E, Set),!;true),
     unify_Pre_with_World(R, Set).
 
+
+
+test([]).
+
+test(sequence L):-
+    test(L),
+    !.
+test(G):-
+    \+ is_list(G),
+    test_with_catch(planner, simula:G, false).
+    % catch(simula:G, _, false).
+
+test([G|Goals]):-
+    test(G),
+    test(Goals).
 
 
 achieves(strips(List_spec), G):-
@@ -236,18 +251,7 @@ holds(G,W):-
 
 
 
-test([]).
 
-test(sequence L):-
-    test(L),
-    !.
-test(G):-
-    \+ is_list(G),
-    catch(simula:G, _, false).
-
-test([G|Goals]):-
-    test(G),
-    test(Goals).
 
 
 assert_states([]).

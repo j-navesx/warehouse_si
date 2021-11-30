@@ -255,3 +255,87 @@ defrule([name: wait_until_rule],
     ]
 ).
 */
+
+
+%%%%%%%%%%%%%
+%Aula 23/11
+%%%%%%%%%%%%%
+
+% while executing a plan, we need a way to execute actions (already defined as prolog predicates)
+
+defrule([name: run_execute_action_1],
+   if execute(Action)  then [
+      retract(execute(Action)),
+      do_execute(Action)
+   ]
+).
+
+/* defrule([name: run_execute_action_2],
+   if ex(Action) then [
+      retract(ex(Action)),
+      do_execute(Action)
+   ]
+). */
+
+do_execute(Action):-
+    log_nl(executing____action(Action)),
+    Action,
+    log_nl(finished_____action(Action)),
+    !.
+
+do_execute(Action):-
+    log_format('action ex(~w) should always yield true',[Action]).
+
+
+%%%%%%%%%%%%%%%%%%
+%Não sei se isto é suposto estar no dispatcher
+%                    |
+%                    V
+
+% timer -> fire rules with a delay or implement periodic behavior.
+
+start_timer(ID):-
+   time_register(ID, _),
+   !.
+
+start_timer(ID):-
+  timer_creation(ID).
+
+timer_creation(ID):-
+  get_time(TimeStamp),
+  assert(time_register( ID, TimeStamp)).
+
+dispose_timer(ID):-
+  retractall( time_register(ID,_)).
+
+reset_timer(ID):-
+   \+ time_register(ID, _),
+   log_nl(non_existing_timer(ID)),
+   fail.
+
+reset_timer(ID):-
+   time_register(ID, _),
+   dispose_timer(ID),
+   timer_creation(ID).
+
+
+timer(ID, DelayInSeconds):- %Seconds: float
+  time_register(ID, TimeBegin),
+  get_time(TNow),
+  (  TNow - TimeBegin) >= DelayInSeconds.
+
+% To prevent the rule from firing again, we discard the button
+
+:-dynamic button_start/0.
+
+% firing periodically
+% If you want the rule to fire at beginning of the system, and fire forever,
+% remove the start_button clause from the rule condition.
+
+defrule([name: periodic_timer_rule_example_1],
+  if button_start and start_timer(timer1) and timer(timer1, 3.0) then [
+     log_nl('rule fired after 3 seconds.'),
+     dispose_timer(timer1),
+     retract(button_start)
+]).
+

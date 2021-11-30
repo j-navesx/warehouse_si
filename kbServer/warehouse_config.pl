@@ -6,6 +6,47 @@
 :-dynamic all_current_states/1.
 :-dynamic all_previous_states/1.
 
+:-dynamic plan/2.
+
+:-dynamic last_id/1.
+
+:-dynamic time_on/2.
+:-dynamic time_off/2.
+:-dynamic x_between/3.
+:-dynamic previous_state/2.
+
+:-dynamic time_register/2.
+:-dynamic execute/1.
+:-dynamic alert/5.
+:-dynamic failure/6.
+
+:-dynamic part_in_cage/0.
+:-dynamic x_is_at/1.
+:-dynamic z_is_at/1.
+:-dynamic y_is_at/1.
+
+:-dynamic move_x_left/0.
+:-dynamic move_x_right/0.
+:-dynamic stop_x/0.
+
+:-dynamic move_z_up/0.
+:-dynamic move_z_down/0.
+:-dynamic stop_z/0.
+
+:-dynamic move_y_in/0.
+:-dynamic move_y_out/0.
+:-dynamic stop_y/0.
+
+
+:-dynamic move_left_station_in/0.
+:-dynamic move_left_station_out/0.
+:-dynamic stop_left_station/0.
+
+:-dynamic move_right_station_in/0.
+:-dynamic move_right_station_out/0.
+:-dynamic stop_right_station/0.
+
+
 :- multifile aa/1.
 
 

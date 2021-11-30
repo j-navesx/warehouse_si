@@ -23,18 +23,18 @@ new_id(1):-
 
 
 
-
-
+/*
 retract_old_diagnoses:-
     forall( done(Goal), retract_safe(diagnose(Goal)) ).
 
 assert_new_diagnoses:-
     forall(goal(Goal), assert_once(diagnose(Goal))).
+*/
 
 
 write_list([]).
 write_list([X|L]):-
-    writeln(X),
+    log_nl(X),
     write_list(L).
 
 
@@ -53,7 +53,7 @@ retract_rtx(Fact):-
     retract(Fact),
     retract(rtx(Fact)).
 
-retract_rtx:-
+retractall_rtx:-
     forall(rtx(Fact), retract(Fact)),
     retractall(rtx(_)).
 
@@ -151,8 +151,6 @@ value_of_prolog_functor(1, Name, Value):-
 */
 
 
-log(X):-
-   writeln(X).
 
 /*
 system_has_states(StatesList):-
@@ -175,10 +173,10 @@ list_to_string(List, String):-
 
 write_list_term([]).
 write_list_term([X | [] ]):-
-    write(X).
+    log(X).
 write_list_term([X | XL ]):-
-    write(X),
-    write(','),
+    log(X),
+    log(','),
     write_list_term(XL).
 
 
@@ -209,3 +207,30 @@ choose(Sub,List) :-
 
 
 
+
+throw_console(Message):-
+   current_output(Curr),
+   set_output(user_output),
+   % throw(Message),
+   writeln(Message),
+   set_output(Curr).
+
+
+log(Sentence):-
+   current_output(Curr),
+   set_output(user_output),
+   write(Sentence),
+   set_output(Curr).
+
+log_nl(Sentence):-
+   current_output(Curr),
+   set_output(user_output),
+   writeln(Sentence),
+   set_output(Curr).
+
+
+log_format(String, Arguments):-
+   current_output(Curr),
+   set_output(user_output),
+   format(String, Arguments),
+   set_output(Curr).

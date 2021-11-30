@@ -4,8 +4,8 @@
 :-consult(warehouse_config).
 :-consult(warehouse_monitoring).
 :-consult(warehouse_dispatcher).
-% :-consult(warehouse_diagnose).
-% :-consult(warehouse_error_recovery).
+:-consult(warehouse_diagnose).
+:-consult(warehouse_error_recovery).
 :-consult(warehouse_planner).
 
 read_sensor_values:-
@@ -18,16 +18,16 @@ read_sensor_values:-
         %don't put final comma at the last one......
         % TO BE COMPLETED
         writeln("}").
-    
-    
+
+
     get_state_value(Term, Variable, ValueOn, _ValueOff):-
             Term,
             Variable = ValueOn,
             !.
-    
+
     get_state_value(_Term, Variable, _ValueOn, ValueOff):-
             Variable = ValueOff.
-    
+
 
 write_comma(0):-!.
 write_comma(Position):-

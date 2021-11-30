@@ -32,7 +32,6 @@
 :-dynamic diagnose/1. % diagnose(Goal).
 :-dynamic action/1.
 
-:-dynamic failure/4.  % failure(ID,Severity,  goal(Goal), Description).
 :-dynamic sequence_task/3.
 
 
@@ -96,7 +95,7 @@ forward_step(SortedRules, PreviousFiredRules,NewFiredRule):-
     pick_a_rule(name:Name, priority:Priority, description:_Description, IfConditions, Conclusions, ElseIfCond, ElseIfConclusions, ElseConclusions),
     %test conditions
     (
-       (   catch(IfConditions, _Exception, false),
+       (   test_with_catch(Name, IfConditions, false),
            \+ member((if(Name), IfConditions, _),      PreviousFiredRules),
            perform_conclusions(Name,Conclusions),
            print_fired_rule(if(Name), IfConditions, Conclusions),
@@ -107,8 +106,8 @@ forward_step(SortedRules, PreviousFiredRules,NewFiredRule):-
        (
            length(ElseIfConclusions, Len),
            Len>0,
-           catch(not(IfConditions), _Exception1, true),
-           catch(ElseIfCond, _Exception2, false),
+           test_with_catch(Name, not(IfConditions),  true),
+           test_with_catch(Name, ElseIfCond,        false),
            \+ member((elseif(Name), ElseIfCond, _),      PreviousFiredRules),
            perform_conclusions(Name,ElseIfConclusions),
            print_fired_rule(elseif(Name), ElseIfCond, ElseIfConclusions),
@@ -120,8 +119,8 @@ forward_step(SortedRules, PreviousFiredRules,NewFiredRule):-
            length(ElseConclusions, Len),
            Len>0,
            %catch(ElseConds, _Exception, false),
-           catch(not(IfConditions), _Exception1, true),
-           catch(not(ElseIfCond), _Exception2, true),
+           test_with_catch(Name, not(IfConditions),  true),
+           test_with_catch(Name, not(ElseIfCond),    true),
            \+ member((else(Name), true, _ ), PreviousFiredRules),
            perform_conclusions(Name, ElseConclusions),
            print_fired_rule(else(Name), true , ElseConclusions),
@@ -201,10 +200,14 @@ perform_conclusions(_,[]).
 perform_conclusions(RuleName, [Conc|Conclusions]):-
     %dinamize_conclusion(Conc),
     %format('executing goal: ~w~n',[Conc]),
-    (   ((Conc) -> true);
+    (   (test_with_catch(RuleName, Conc,false) -> true);
         log_format('FATAL: rule ~w failed in conclusion term ~w~n',[RuleName, Conc])
     ),
     perform_conclusions(RuleName,Conclusions).
+
+
+
+
 
 
 and(A,B):-
