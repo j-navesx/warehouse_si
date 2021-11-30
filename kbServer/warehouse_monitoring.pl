@@ -84,7 +84,7 @@ defrule([name: x_moving0],
 defrule([name: x_moving1],
     if port_value(4, Byte_val)  and (  1 is getbit(Byte_val, 1) )
     then (
-       assert(x_moving('-1'))
+       assert(x_moving(-1))
     )
  ).
 
@@ -109,7 +109,7 @@ defrule([name: y_moving0],
 defrule([name: y_moving1],
     if port_value(4, Byte_val)  and (  1 is getbit(Byte_val, 3) )
     then (
-       assert(y_moving('-1'))
+       assert(y_moving(-1))
     )
  ).
 
@@ -134,7 +134,7 @@ defrule([name: z_moving0],
 defrule([name: z_moving1],
     if port_value(4, Byte_val)  and (  1 is getbit(Byte_val, 6) )
     then (
-       assert(z_moving('-1'))
+       assert(z_moving(-1))
     )
  ).
 
@@ -171,7 +171,7 @@ defrule([name: left_station_moving_in_rule],
 defrule([name: left_station_moving_out_rule],
     if port_value(5, Byte_val)  and (  1 is getbit(Byte_val, 0) )
     then (
-       assert(left_station_moving('-1'))
+       assert(left_station_moving(-1))
     )
  ).
 
@@ -204,7 +204,7 @@ defrule([name: right_station_moving_in_rule],
 defrule([name: right_station_moving_out_rule],
     if port_value(5, Byte_val)  and (  1 is getbit(Byte_val, 2) )
     then (
-       assert(right_station_moving('-1'))
+       assert(right_station_moving(-1))
     )
  ).
 
@@ -277,7 +277,9 @@ if    x_between(_,_,_) and x_is_at(_) then [
          retract(x_between(_,_, _))
 ]).
 
-%PREVIOUS_STATE -> mimics TIME_OFF (usar caso nÃo queiramos trabalhar com o TIME_OFF)
+% //TODO Between para o Z e Y tbm
+
+%PREVIOUS_STATE -> mimics TIME_OFF (usar caso nï¿½o queiramos trabalhar com o TIME_OFF)
 defrule([name: previous_state_rule],
 if
      time_off(Toff,State)          and
@@ -300,7 +302,7 @@ defrule([name: alert_x_rule],
         %log_nl(alert(ID, TimeStamp, yellow_alert, 'user pressed yellow button', pending) )
 ]).
 
-:- dynamic user_pressed_yellow_button/0. % set it dynamic to avoid an Rule error
+:- dynamic user_pressed_yellow_button/0. % set it dynamic to avoid an Rule errorï¿½
 
 %generate json array of the current alerts.
 get_alerts_json(Status):-
@@ -327,7 +329,7 @@ defrule([name: machine_hvac_failure_rule],
    ]).
 
 
-:- dynamic sensor_temperature /1. % set it dynamic to avoid an “Rule error”
+:- dynamic sensor_temperature /1. % set it dynamic to avoid an ï¿½Rule errorï¿½
 
 
 %generate json array of the current failures.
