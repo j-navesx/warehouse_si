@@ -32,21 +32,19 @@
                         </tr>
                     </thead>
                     <tbody id="idTableBody">
-                        
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-</body>
-<script>
-    refreshAlertsTable();
-
-    setInterval(function () {            
+    <script>
         refreshAlertsTable();
-    }, 1000);
 
-    function refreshAlertsTable() {
+        setInterval(function () {
+            refreshAlertsTable();
+        }, 1000);
+
+        function refreshAlertsTable() {
             ajax_post_request("/rtx_get", { "query": "get_alerts_json(pending)" }, function (result) {
                 console.log("query result = " + result.trim());
                 var jsObj = JSON.parse(result);
@@ -55,15 +53,15 @@
                     if (jsObj.hasOwnProperty(key)) {
                         var o = jsObj[key];
                         lines += `<tr>
-                                    <td>${o.id}</td>
-                                    <td>${o.time}</td>
-                                    <td>${o.reference}</td>
-                                    <td>${o.explanation}</td>
-                                    <td>${o.status}</td>
-                                    <td>
-                                      <button class="button tableButton" onclick="resolve(${o.id});">Resolve</button>
-                                    </td>
-                                 </tr>`;
+                                        <td>${o.id}</td>
+                                        <td>${o.time}</td>
+                                        <td>${o.reference}</td>
+                                        <td>${o.explanation}</td>
+                                        <td>${o.status}</td>
+                                        <td>
+                                          <button class="button tableButton" onclick="resolve(${o.id});">Resolve</button>
+                                        </td>
+                                     </tr>`;
                     }
                 }
                 document.getElementById("idTableBody").innerHTML = lines;
@@ -76,7 +74,8 @@
                 //alert("aaaa");
                 refreshAlertsTable();
             });
-        }       
+        }
 
-</script>
+    </script>
+</body>
 </html>

@@ -1,3 +1,6 @@
+:-ensure_loaded(warehouse_error_recovery).
+:-ensure_loaded(warehouse_monitoring).
+
 %Apply immediate action to immobilize the axis
 %Create plan with recovery actions
 %Grab all running plans in a list

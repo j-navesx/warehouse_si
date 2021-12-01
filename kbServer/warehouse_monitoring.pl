@@ -277,7 +277,7 @@ if    x_between(_,_,_) and x_is_at(_) then [
          retract(x_between(_,_, _))
 ]).
 
-% //TODO Between para o Z e Y tbm
+% //TODO Between para o Z e Y tbm ඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞ
 
 %PREVIOUS_STATE -> mimics TIME_OFF (usar caso n�o queiramos trabalhar com o TIME_OFF)
 defrule([name: previous_state_rule],
@@ -289,6 +289,8 @@ if
           retractall(previous_state(_, GenericState)),
           assert(previous_state(Toff,State))
 ]).
+
+:- dynamic user_pressed_yellow_button/0. % set it dynamic to avoid an Rule error�
 
 %YELLOW ALERT RULE
 defrule([name: alert_x_rule],
@@ -302,8 +304,6 @@ defrule([name: alert_x_rule],
         %log_nl(alert(ID, TimeStamp, yellow_alert, 'user pressed yellow button', pending) )
 ]).
 
-:- dynamic user_pressed_yellow_button/0. % set it dynamic to avoid an Rule error�
-
 %generate json array of the current alerts.
 get_alerts_json(Status):-
    % output as JSON object
@@ -316,6 +316,11 @@ get_alerts_json(Status):-
 
     ),List),
    write_term(List,[]).
+
+resolve_selected_alert(ID):-
+   alert(ID, TimeStamp, Reference, Explanation, _Status),
+   retractall(alert(ID,_,_,_,_)),
+   assert(alert(ID, TimeStamp, Reference, Explanation, resolved)).
 
 defrule([name: machine_hvac_failure_rule],
    if  sensor_temperature(Temp) and                              % relevant event/state
@@ -344,6 +349,21 @@ get_failures_json(Status):-
                                     [ID, Time, Reference, Explanation, Plan, Status])
      ),List),
    write_term(List,[]).
+
+resolve_selected_failure(ID):-
+
+   failure(ID, TimeStampFailure, ReferenceFailure, ExplanationFailure, Plan, pending),
+   retractall(failure(ID,_,_,_,_,_)),
+   assert(failure(ID, TimeStampFailure, ReferenceFailure, ExplanationFailure, Plan, resolved)),
+
+   % the alert might have been gone before before...
+   % and findall always returns true, even if there is no alerts.
+   findall(_, (
+               alert(ID, TimeStampAlert, ReferenceAlert, ExplanationAlert, _StatusAlert),
+               retractall(alert(ID,_,_,_,_)),
+               assert(alert(ID, TimeStampAlert, ReferenceAlert, ExplanationAlert, resolved))
+   ), _),
+   assert(Plan).
 
 % X_LIMIT_10 alert
 % alert not reported yet

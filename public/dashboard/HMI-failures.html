@@ -30,7 +30,6 @@
     </style>
 </head>
 <body style="background: rgb(234, 241, 234);">
-    <!– CONTENT HERE-->
     <div class="modal" id="partialViewModal" tabindex="-1" role="dialog" aria-labelledby="partialViewModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -48,57 +47,74 @@
             </div>
         </div>
     </div>
-</body>
-<script>
-    refreshFailuresTable();
+    <div class="container-fluid main-container">
+        <div class="row">
+            <div class="col-sm-1">
+                <table class="table table-sm table-bordered text-center">
+                    <thead>
+                        <tr>
+                            <th>id</th>
+                            <th>time</th>
+                            <th>Reference</th>
+                            <th>Description</th>
+                            <th>Plan</th>
+                            <th>Status</th>
+                            <th>Actions</th>
 
-    setInterval(function () {
-        //refreshAlertsTable();
+                        </tr>
+                    </thead>
+                    <tbody id="idTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
         refreshFailuresTable();
-    }, 1000);
 
-    /* THE OTHER JAVASCRIPT FUNCTIONS HERE */
-
-    function refreshFailuresTable() {
-        ajax_post_request("/rtx_get", { "query": "get_failures_json(pending)" }, function (result) {
-            //console.log("query result = " + result.trim());
-
-            var jsObj = JSON.parse(result);
-            //$("#xLabel").text("xMov: " + jsObj.x);
-            //console.log("query result = " + jsObj);
-            var lines = ""
-            for (var key in jsObj) {
-                if (jsObj.hasOwnProperty(key)) {
-                    var o = jsObj[key];
-                    lines += `<tr>
-                                    <td>${o.id}</td>
-                                    <td>${o.time}</td>
-                                    <td>${o.reference}</td>
-                                    <td class="longTextCss" onclick="showDetails('${o.explanation}');">${o.explanation}</td>
-                                    <td class="longTextCss" onclick="showDetails('${o.plan}');">${o.plan}</td>
-                                    <td>${o.status}</td>
-                                    <td>
-                                      <button class="button tableButton" onclick="resolve(${o.id});">Execute</button>
-                                    </td>
-                                 </tr>`;
-                }
-            }
-            document.getElementById("idTableBody").innerHTML = lines;
-        });
-    }
-
-    function showDetails(textDetails) {
-        //alert(textDetails);
-        $("#modalDetails").text(textDetails);
-        $("#partialViewModal").modal("show");
-    }
-
-    function resolve(id) {
-        var query = `resolve_selected_failure(${id})`;
-        ajax_post_request("/rtx_get", { "query": query }, function (result) {
+        setInterval(function () {
+            //refreshAlertsTable();
             refreshFailuresTable();
-        });
-    }
+        }, 1000);
+        /* THE OTHER JAVASCRIPT FUNCTIONS HERE */
+        function showDetails(textDetails) {
+            //alert(textDetails);
+            $("#modalDetails").text(textDetails);
+            $("#partialViewModal").modal("show");
+        }
+        function resolve(id) {
+            var query = `resolve_selected_failure(${id})`;
+            ajax_post_request("/rtx_get", { "query": query }, function (result) {
+                refreshFailuresTable();
+            });
+        }
+        function refreshFailuresTable() {
+            ajax_post_request("/rtx_get", { "query": "get_failures_json(pending)" }, function (result) {
+                //console.log("query result = " + result.trim());
 
-</script>
+                var jsObj = JSON.parse(result);
+                //$("#xLabel").text("xMov: " + jsObj.x);
+                //console.log("query result = " + jsObj);
+                var lines = ""
+                for (var key in jsObj) {
+                    if (jsObj.hasOwnProperty(key)) {
+                        var o = jsObj[key];
+                        lines += `<tr>
+                                        <td>${o.id}</td>
+                                        <td>${o.time}</td>
+                                        <td>${o.reference}</td>
+                                        <td class="longTextCss" onclick="showDetails('${o.explanation}');">${o.explanation}</td>
+                                        <td class="longTextCss" onclick="showDetails('${o.plan}');">${o.plan}</td>
+                                        <td>${o.status}</td>
+                                        <td>
+                                          <button class="button tableButton" onclick="resolve(${o.id});">Execute</button>
+                                        </td>
+                                     </tr>`;
+                    }
+                }
+                document.getElementById("idTableBody").innerHTML = lines;
+            });
+        }
+    </script>
+</body>
 </html>

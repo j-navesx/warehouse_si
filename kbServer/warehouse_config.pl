@@ -143,5 +143,16 @@ set_bit_value(Port, Bit_number,  1):-
     retractall(port_value(Port, _)),
     assert(port_value(Port, New_value)).
 
+generate_unique_id(ID):-
+    \+ last_id(_),
+    ID = 0,
+    assert(last_id(ID)),
+    !.
 
+generate_unique_id(ID):-
+    last_id(PreviousID),
+    ID is PreviousID + 1,
+    retractall(last_id(_)),
+    assert(last_id(ID)),
+    !.
 
