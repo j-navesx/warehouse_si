@@ -13,6 +13,8 @@
 :-dynamic time_on/2.
 :-dynamic time_off/2.
 :-dynamic x_between/3.
+:-dynamic y_between/3.
+:-dynamic z_between/3.
 :-dynamic previous_state/2.
 
 :-dynamic time_register/2.

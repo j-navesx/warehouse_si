@@ -278,6 +278,44 @@ if    x_between(_,_,_) and x_is_at(_) then [
          retract(x_between(_,_, _))
 ]).
 
+%Y-BETWEEN ON
+defrule([name: y_between_rule_on],
+if    not(y_between(_,_, _))          and
+      not(y_is_at(_))                 and
+      time_off(_, y_is_at(Yi))        and
+      y_moving(MovDirection)
+      and (MovDirection \= 0)         then
+      [
+          Yf is Yi + MovDirection,
+          get_time(Tstamp),
+          assert(y_between(Tstamp,Yi, Yf))
+      ]).
+
+%Y-BETWEEN OFF
+defrule([name: y_between_rule_off],
+if    y_between(_,_,_) and y_is_at(_) then [
+         retract(y_between(_,_, _))
+]).
+
+%Z-BETWEEN ON
+defrule([name: z_between_rule_on],
+if    not(z_between(_,_, _))          and
+      not(z_is_at(_))                 and
+      time_off(_, z_is_at(Zi))        and
+      z_moving(MovDirection)
+      and (MovDirection \= 0)         then
+      [
+          Zf is Zi + MovDirection,
+          get_time(Tstamp),
+          assert(z_between(Tstamp,Zi, Zf))
+      ]).
+
+%Z-BETWEEN OFF
+defrule([name: z_between_rule_off],
+if    z_between(_,_,_) and z_is_at(_) then [
+         retract(z_between(_,_, _))
+]).
+
 % //TODO Between para o Z e Y tbm ඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞ
 
 %PREVIOUS_STATE -> mimics TIME_OFF (usar caso n�o queiramos trabalhar com o TIME_OFF)
@@ -289,6 +327,22 @@ if
           make_most_generic_term(State, GenericState),
           retractall(previous_state(_, GenericState)),
           assert(previous_state(Toff,State))
+]).
+
+% //TODO Position sensor broken
+% //TODO Warehouse stopped between two positions (actuator broken?).
+% //TODO Beyond limits
+
+%alert_sensor_skipped_x  NOT WORKING
+defrule([name: x_sensor_skipped_rule],
+if
+     previous_state(_TS, x_is_at(Xbefore)) and
+     x_is_at(Xcurrent)     and                
+     Xcurrent-Xbefore > 1
+       then [
+         generate_unique_id(ID),
+         get_time(TS),
+         assert(alert(ID, TS, x_sensor_alert, 'xx sensor skipped', pending))
 ]).
 
 :- dynamic user_pressed_yellow_button/0. % set it dynamic to avoid an Rule error�
