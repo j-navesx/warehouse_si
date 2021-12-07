@@ -2,6 +2,7 @@
 :-ensure_loaded('RTXengine/RTXengine.pl').
 
 :-ensure_loaded(warehouse_config).
+:-ensure_loaded(warehouse_diagnose).
 
 defrule([name:start_rule, priority:1000],
     if    true     then (
@@ -378,6 +379,7 @@ defrule([name: x_past_position_10_rule],
       then  [
          generate_unique_id(ID),
          get_time(TS),
-         assert(alert(ID, TS, x_limit_10, 'xx actuator moving beyond position x=10 to the right', pending))
+         assert(alert(ID, TS, x_limit_10, 'xx actuator moving beyond position x=10 to the right', pending)),
+         diagnose(alert(ID, TS, x_limit_10, 'xx actuator moving beyond position x=10 to the right', pending))
       ]).
 
