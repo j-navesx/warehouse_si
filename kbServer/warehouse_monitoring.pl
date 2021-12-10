@@ -338,7 +338,7 @@ defrule([name: x_sensor_skipped_rule],
 if
      previous_state(_TS, x_is_at(Xbefore)) and
      x_is_at(Xcurrent)     and                
-     Xcurrent-Xbefore > 1
+     abs(Xcurrent-Xbefore) > 1
        then [
          generate_unique_id(ID),
          get_time(TS),
