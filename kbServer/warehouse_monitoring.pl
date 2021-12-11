@@ -331,9 +331,8 @@ if
 
 % //TODO Position sensor broken
 % //TODO Warehouse stopped between two positions (actuator broken?).
-% //TODO Beyond limits
 
-%alert_sensor_skipped_x  NOT WORKING
+%alert_sensor_skipped_x -> for sensor broken NOT WORKING!!!
 defrule([name: x_sensor_skipped_rule],
 if
      previous_state(_TS, x_is_at(Xbefore)) and
@@ -420,6 +419,10 @@ resolve_selected_failure(ID):-
    ), _),
    assert(Plan).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     Beyond limits
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 % X_LIMIT_10 alert
 % alert not reported yet
 % X is between 10 and 11
@@ -437,3 +440,57 @@ defrule([name: x_past_position_10_rule],
          diagnose(alert(ID, TS, x_limit_10, 'xx actuator moving beyond position x=10 to the right', pending))
       ]).
 
+defrule([name: x_past_position_1_rule],
+   if not(alert(_ID, _TStamp, x_limit_1, _Description, pending)) and
+      x_between(_TS, 1, 0)  and
+      x_moving(-1)
+      then  [
+         generate_unique_id(ID),
+         get_time(TS),
+         assert(alert(ID, TS, x_limit_1, 'xx actuator moving beyond position x=1 to the left', pending)),
+         diagnose(alert(ID, TS, x_limit_1, 'xx actuator moving beyond position x=1 to the left', pending))
+      ]).
+
+defrule([name: y_past_position_3_rule],
+   if not(alert(_ID, _TStamp, y_limit_3, _Description, pending)) and
+      y_between(_TS, 3, 4)  and
+      y_moving(1)
+      then  [
+         generate_unique_id(ID),
+         get_time(TS),
+         assert(alert(ID, TS, y_limit_3, 'yy actuator moving beyond position y=3 going in', pending)),
+         diagnose(alert(ID, TS, y_limit_3, 'yy actuator moving beyond position y=3 going in', pending))
+      ]).
+
+defrule([name: y_past_position_1_rule],
+   if not(alert(_ID, _TStamp, y_limit_1, _Description, pending)) and
+      y_between(_TS, 1, 0)  and
+      y_moving(-1)
+      then  [
+         generate_unique_id(ID),
+         get_time(TS),
+         assert(alert(ID, TS, y_limit_1, 'yy actuator moving beyond position y=1 going out', pending)),
+         diagnose(alert(ID, TS, y_limit_1, 'yy actuator moving beyond position y=1 going out', pending))
+      ]).
+   
+defrule([name: z_past_position_5_5_rule],
+   if not(alert(_ID, _TStamp, z_limit_5_5, _Description, pending)) and
+      z_between(_TS, 5.5, 6.5)  and
+      z_moving(1)
+      then  [
+         generate_unique_id(ID),
+         get_time(TS),
+         assert(alert(ID, TS, z_limit_5_5, 'zz actuator moving beyond position z=5.5 going up', pending)),
+         diagnose(alert(ID, TS, z_limit_5_5, 'zz actuator moving beyond position z=5.5 going up', pending))
+      ]).
+
+defrule([name: z_past_position_1_rule],
+if not(alert(_ID, _TStamp, z_limit_1, _Description, pending)) and
+   z_between(_TS, 1, 0)  and
+   z_moving(-1)
+   then  [
+      generate_unique_id(ID),
+      get_time(TS),
+      assert(alert(ID, TS, z_limit_1, 'zz actuator moving beyond position z=1 going down', pending)),
+      diagnose(alert(ID, TS, z_limit_1, 'zz actuator moving beyond position z=1 going down', pending))
+   ]).
