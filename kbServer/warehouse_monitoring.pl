@@ -316,8 +316,6 @@ if    z_between(_,_,_) and z_is_at(_) then [
          retract(z_between(_,_, _))
 ]).
 
-% //TODO Between para o Z e Y tbm ඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞඞ
-
 %PREVIOUS_STATE -> mimics TIME_OFF (usar caso n�o queiramos trabalhar com o TIME_OFF)
 defrule([name: previous_state_rule],
 if
@@ -327,21 +325,6 @@ if
           make_most_generic_term(State, GenericState),
           retractall(previous_state(_, GenericState)),
           assert(previous_state(Toff,State))
-]).
-
-% //TODO Position sensor broken
-% //TODO Warehouse stopped between two positions (actuator broken?).
-
-%alert_sensor_skipped_x -> for sensor broken NOT WORKING!!!
-defrule([name: x_sensor_skipped_rule],
-if
-     previous_state(_TS, x_is_at(Xbefore)) and
-     x_is_at(Xcurrent)     and                
-     abs(Xcurrent-Xbefore) > 1
-       then [
-         generate_unique_id(ID),
-         get_time(TS),
-         assert(alert(ID, TS, x_sensor_alert, 'xx sensor skipped', pending))
 ]).
 
 :- dynamic user_pressed_yellow_button/0. % set it dynamic to avoid an Rule error�
@@ -418,6 +401,116 @@ resolve_selected_failure(ID):-
                assert(alert(ID, TimeStampAlert, ReferenceAlert, ExplanationAlert, resolved))
    ), _),
    assert(Plan).
+
+% //TODO Warehouse stopped between two positions (actuator broken?).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     Warehouse stopped between two positions (actuator broken?)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+/* defrule([name: x_stopped_between_rule],
+if
+     x_between(_,_,_) and          
+     x_moving(0)       and
+     not(alert(_ID, _TS, x_actuator_alert_stopped_between, _Descr, pending))                       
+       then [
+         generate_unique_id(ID),
+         get_time(TS),
+         assert(alert(ID, TS, x_actuator_alert_stopped_between, 'xx actuator stopped between two positions', pending)),
+         diagnose(alert(ID, TS, x_actuator_alert_stopped_between, 'xx actuator stopped between two positions', pending)) 
+]). */
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     Position sensor broken
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%alert_sensor_skipped_x -> for sensor broken NOT WORKING!!!
+% previous_state(_TS, x_is_at(Xbefore)) não é bom já que atualiza logo no sensor
+% o time_off(Ts, x_is_at(Xf)) apenas atualiza o sensor quando o deixa de detetar
+defrule([name: x_sensor_skipped_right_rule],
+if
+     time_off(_, x_is_at(Xlast)) and     
+     x_is_at(Xcurrent)     and      
+     x_moving(1)       and
+     (Xcurrent - Xlast > 1) and
+     not(alert(_ID, _TS, x_sensor_alert_right, _Descr, pending))     %x_sensor_alert                      
+       then [
+         generate_unique_id(ID),
+         get_time(TS),
+         assert(alert(ID, TS, x_sensor_alert_right, 'xx sensor skipped going right', pending)), %x_sensor_alert, 'xx sensor skipped',pending
+         diagnose(alert(ID, TS, x_sensor_alert_right, 'xx sensor skipped going right', pending)) %levar Xlast para o wait until x_is_at(Xlast) ???
+]).
+
+defrule([name: x_sensor_skipped_left_rule],
+if
+     time_off(_, x_is_at(Xlast)) and     
+     x_is_at(Xcurrent)     and      
+     x_moving(-1)       and
+     (Xlast - Xcurrent > 1) and
+     not(alert(_ID, _TS, x_sensor_alert_left, _Descr, pending))     %x_sensor_alert                      
+       then [
+         generate_unique_id(ID),
+         get_time(TS),
+         assert(alert(ID, TS, x_sensor_alert_left, 'xx sensor skipped going left', pending)), %x_sensor_alert, 'xx sensor skipped',pending
+         diagnose(alert(ID, TS, x_sensor_alert_left, 'xx sensor skipped going left', pending)) %levar Xlast para o wait until x_is_at(Xlast) ???
+]).
+
+defrule([name: y_sensor_skipped_in_rule],
+if
+     time_off(_, y_is_at(Ylast)) and     
+     y_is_at(Ycurrent)     and      
+     y_moving(1)       and
+     (Ycurrent - Ylast > 1) and
+     not(alert(_ID, _TS, y_sensor_alert_in, _Descr, pending))     %x_sensor_alert                      
+       then [
+         generate_unique_id(ID),
+         get_time(TS),
+         assert(alert(ID, TS, y_sensor_alert_in, 'yy sensor skipped going in', pending)), %x_sensor_alert, 'xx sensor skipped',pending
+         diagnose(alert(ID, TS, y_sensor_alert_in, 'yy sensor skipped going in', pending)) %levar Xlast para o wait until x_is_at(Xlast) ???
+]).
+
+defrule([name: y_sensor_skipped_out_rule],
+if
+     time_off(_, y_is_at(Ylast)) and     
+     y_is_at(Ycurrent)     and      
+     y_moving(-1)       and
+     (Ylast - Ycurrent > 1) and
+     not(alert(_ID, _TS, y_sensor_alert_out, _Descr, pending))     %x_sensor_alert                      
+       then [
+         generate_unique_id(ID),
+         get_time(TS),
+         assert(alert(ID, TS, y_sensor_alert_out, 'yy sensor skipped going out', pending)), %x_sensor_alert, 'xx sensor skipped',pending
+         diagnose(alert(ID, TS, y_sensor_alert_out, 'yy sensor skipped going out', pending)) %levar Xlast para o wait until x_is_at(Xlast) ???
+]).
+
+defrule([name: z_sensor_skipped_up_rule],
+if
+     time_off(_, z_is_at(Zlast)) and     
+     z_is_at(Zcurrent)     and      
+     z_moving(1)       and
+     (Zcurrent - Zlast > 0.5) and
+     not(alert(_ID, _TS, z_sensor_alert_up, _Descr, pending))     %x_sensor_alert                      
+       then [
+         generate_unique_id(ID),
+         get_time(TS),
+         assert(alert(ID, TS, z_sensor_alert_up, 'zz sensor skipped going up', pending)), %x_sensor_alert, 'xx sensor skipped',pending
+         diagnose(alert(ID, TS, z_sensor_alert_up, 'zz sensor skipped going up', pending)) %levar Xlast para o wait until x_is_at(Xlast) ???
+]).
+
+defrule([name: z_sensor_skipped_down_rule],
+if
+     time_off(_, z_is_at(Zlast)) and     
+     z_is_at(Zcurrent)     and      
+     z_moving(-1)       and
+     (Zlast - Zcurrent > 0.5) and
+     not(alert(_ID, _TS, z_sensor_alert_down, _Descr, pending))     %x_sensor_alert                      
+       then [
+         generate_unique_id(ID),
+         get_time(TS),
+         assert(alert(ID, TS, z_sensor_alert_down, 'zz sensor skipped going down', pending)), %x_sensor_alert, 'xx sensor skipped',pending
+         diagnose(alert(ID, TS, z_sensor_alert_down, 'zz sensor skipped going down', pending)) %levar Xlast para o wait until x_is_at(Xlast) ???
+]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 %     Beyond limits
