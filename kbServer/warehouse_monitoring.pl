@@ -384,7 +384,8 @@ get_failures_json(Status):-
      ),List),
    write_term(List,[]).
 
-resolve_selected_failure(ID):-
+% OLD resolve_selected_failure
+/* resolve_selected_failure(ID):-
 
    failure(ID, TimeStampFailure, ReferenceFailure, ExplanationFailure, Plan, pending),
    retractall(failure(ID,_,_,_,_,_)),
@@ -397,49 +398,15 @@ resolve_selected_failure(ID):-
                retractall(alert(ID,_,_,_,_)),
                assert(alert(ID, TimeStampAlert, ReferenceAlert, ExplanationAlert, resolved))
    ), _),
-   assert(Plan).
+   assert(Plan). */
 
-% //TODO Warehouse stopped between two positions (actuator broken?).
+% New resolve_selected_failure
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%     Warehouse stopped between two positions (actuator broken?)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-defrule([name: x_stopped_between_rule],
-if
-     x_between(_,_,_) and          
-     x_moving(0)       and
-     not(alert(_ID, _TS, x_actuator_stopped_between, _Descr, pending))                       
-       then [
-         generate_unique_id(ID),
-         get_time(TS),
-         assert(alert(ID, TS, x_actuator_stopped_between, 'xx actuator stopped between two positions', pending)),
-         diagnose(alert(ID, TS, x_actuator_stopped_between, 'xx actuator stopped between two positions', pending)) 
-]).
-
-defrule([name: y_stopped_between_rule],
-if
-     y_between(_,_,_) and          
-     y_moving(0)       and
-     not(alert(_ID, _TS, y_actuator_stopped_between, _Descr, pending))                       
-       then [
-         generate_unique_id(ID),
-         get_time(TS),
-         assert(alert(ID, TS, y_actuator_stopped_between, 'yy actuator stopped between two positions', pending)),
-         diagnose(alert(ID, TS, y_actuator_stopped_between, 'yy actuator stopped between two positions', pending)) 
-]).
-
-defrule([name: z_stopped_between_rule],
-if
-     z_between(_,_,_) and          
-     z_moving(0)       and
-     not(alert(_ID, _TS, z_actuator_stopped_between, _Descr, pending))                       
-       then [
-         generate_unique_id(ID),
-         get_time(TS),
-         assert(alert(ID, TS, z_actuator_stopped_between, 'zz actuator stopped between two positions', pending)),
-         diagnose(alert(ID, TS, z_actuator_stopped_between, 'zz actuator stopped between two positions', pending)) 
-]).
+   resolve_selected_failure(ID):-
+      failure(ID, _TimeStampFailure, _ReferenceFailure, _ExplanationFailure, Plan, pending),
+      % the alert might have been gone before before...
+      % and findall always returns true, even if there are no alerts.
+      assert(Plan).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %     Position sensor broken
@@ -606,3 +573,47 @@ if not(alert(_ID, _TStamp, z_limit_1, _Description, pending)) and
       assert(alert(ID, TS, z_limit_1, 'zz actuator moving beyond position z=1 going down', pending)),
       diagnose(alert(ID, TS, z_limit_1, 'zz actuator moving beyond position z=1 going down', pending))
    ]).
+
+% //TODO Warehouse stopped between two positions (actuator broken?).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     Warehouse stopped between two positions (actuator broken?)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+defrule([name: x_stopped_between_rule],
+if
+     x_between(_,_,_) and          
+     x_moving(0)       and
+     not(alert(_ID, _TS, x_actuator_stopped_between, _Descr, pending)) and
+     not(alert(_ID, _TS, x_limit_10, _Descr, pending))   and 
+     not(alert(_ID, _TS, x_limit_1, _Descr, pending))                      
+       then [
+         generate_unique_id(ID),
+         get_time(TS),
+         assert(alert(ID, TS, x_actuator_stopped_between, 'xx actuator stopped between two positions', pending)),
+         diagnose(alert(ID, TS, x_actuator_stopped_between, 'xx actuator stopped between two positions', pending)) 
+]).
+
+defrule([name: y_stopped_between_rule],
+if
+     y_between(_,_,_) and          
+     y_moving(0)       and
+     not(alert(_ID, _TS, y_actuator_stopped_between, _Descr, pending))                       
+       then [
+         generate_unique_id(ID),
+         get_time(TS),
+         assert(alert(ID, TS, y_actuator_stopped_between, 'yy actuator stopped between two positions', pending)),
+         diagnose(alert(ID, TS, y_actuator_stopped_between, 'yy actuator stopped between two positions', pending)) 
+]).
+
+defrule([name: z_stopped_between_rule],
+if
+     z_between(_,_,_) and          
+     z_moving(0)       and
+     not(alert(_ID, _TS, z_actuator_stopped_between, _Descr, pending))                       
+       then [
+         generate_unique_id(ID),
+         get_time(TS),
+         assert(alert(ID, TS, z_actuator_stopped_between, 'zz actuator stopped between two positions', pending)),
+         diagnose(alert(ID, TS, z_actuator_stopped_between, 'zz actuator stopped between two positions', pending)) 
+]).
