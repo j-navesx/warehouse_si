@@ -14,16 +14,54 @@
 %     Warehouse stopped between two positions (actuator broken?)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-/* find_recovery_plan(ID, x_actuator_alert_stopped_between, Plan):-
-    %immediate action
-    assert(stop_x),
+find_recovery_plan(ID, x_actuator_stopped_between, Plan):-
 
     findall(subplan(Ref, List), plan(Ref, List), ListOfAllPlans),
     retractall(plan(_, _)), %suspend all running plans
-    RecoveryActions = [move_x_left, wait_until(x_is_at(_)), stop_x],
+    RecoveryActions = [
+        wait_until(not(recovering_mutex)), 
+        ex( assert(recovering_mutex)),
+        move_x_left, 
+        wait_until(x_is_at(_)), 
+        stop_x,
+        ex(retract(recovering_mutex)), 
+        ex(change_failure_status(ID, resolved))
+    ],
     append(RecoveryActions, ListOfAllPlans, RecoveryPlan),
-    Plan = plan(recover_x_actuator_alert_stopped_between_failure, RecoveryPlan).
- */
+    Plan = plan(recover_x_actuator_stopped_between_failure, RecoveryPlan).
+
+find_recovery_plan(ID, y_actuator_stopped_between, Plan):-
+
+    findall(subplan(Ref, List), plan(Ref, List), ListOfAllPlans),
+    retractall(plan(_, _)), %suspend all running plans
+    RecoveryActions = [
+        wait_until(not(recovering_mutex)), 
+        ex( assert(recovering_mutex)),
+        move_y_in, 
+        wait_until(y_is_at(_)), 
+        stop_y,
+        ex(retract(recovering_mutex)), 
+        ex(change_failure_status(ID, resolved))
+    ],
+    append(RecoveryActions, ListOfAllPlans, RecoveryPlan),
+    Plan = plan(recover_y_actuator_stopped_between_failure, RecoveryPlan).
+
+find_recovery_plan(ID, z_actuator_stopped_between, Plan):-
+
+    findall(subplan(Ref, List), plan(Ref, List), ListOfAllPlans),
+    retractall(plan(_, _)), %suspend all running plans
+    RecoveryActions = [
+        wait_until(not(recovering_mutex)), 
+        ex( assert(recovering_mutex)),
+        move_z_up, 
+        wait_until(z_is_at(_)), 
+        stop_z,
+        ex(retract(recovering_mutex)), 
+        ex(change_failure_status(ID, resolved))
+    ],
+    append(RecoveryActions, ListOfAllPlans, RecoveryPlan),
+    Plan = plan(recover_z_actuator_stopped_between_failure, RecoveryPlan).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %     Position sensor broken
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

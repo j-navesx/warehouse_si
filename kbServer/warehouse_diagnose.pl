@@ -10,14 +10,33 @@
 %     Warehouse stopped between two positions (actuator broken?)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-/* diagnose(alert(ID, TimeStamp, x_actuator_alert_stopped_between, Description, pending)):-
-    not(failure(_ID, _TS, x_actuator_alert_stopped_between, _Explanation, _Plan, pending)), %o stor tinha explantion, acho que foi gralha
+diagnose(alert(_, _, x_actuator_stopped_between, _, pending)):-
+    alert(ID, TimeStamp, x_actuator_stopped_between, Description, pending),
+    not(failure(_ID, _TS, x_actuator_stopped_between, _Explanation, _Plan, pending)), %o stor tinha explantion, acho que foi gralha
     %just for illustration, could be other causes:
     DetailedDescription = 'Bad operation of the warehouse.',
     atom_concat(Description, DetailedDescription, Explanation),
-    find_recovery_plan(x_actuator_alert_stopped_between, Plan),
-    assert(failure(ID, TimeStamp, x_actuator_alert_stopped_between, Explanation, Plan, pending)).
- */
+    find_recovery_plan(ID, x_actuator_stopped_between, Plan),
+    assert(failure(ID, TimeStamp, x_actuator_stopped_between, Explanation, Plan, pending)).
+
+diagnose(alert(_, _, y_actuator_stopped_between, _, pending)):-
+    alert(ID, TimeStamp, y_actuator_stopped_between, Description, pending),
+    not(failure(_ID, _TS, y_actuator_stopped_between, _Explanation, _Plan, pending)), %o stor tinha explantion, acho que foi gralha
+    %just for illustration, could be other causes:
+    DetailedDescription = 'Bad operation of the warehouse.',
+    atom_concat(Description, DetailedDescription, Explanation),
+    find_recovery_plan(ID, y_actuator_stopped_between, Plan),
+    assert(failure(ID, TimeStamp, y_actuator_stopped_between, Explanation, Plan, pending)).
+
+diagnose(alert(_, _, z_actuator_stopped_between, _, pending)):-
+    alert(ID, TimeStamp, z_actuator_stopped_between, Description, pending),
+    not(failure(_ID, _TS, z_actuator_stopped_between, _Explanation, _Plan, pending)), %o stor tinha explantion, acho que foi gralha
+    %just for illustration, could be other causes:
+    DetailedDescription = 'Bad operation of the warehouse.',
+    atom_concat(Description, DetailedDescription, Explanation),
+    find_recovery_plan(ID, z_actuator_stopped_between, Plan),
+    assert(failure(ID, TimeStamp, z_actuator_stopped_between, Explanation, Plan, pending)).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %     Position sensor broken
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
