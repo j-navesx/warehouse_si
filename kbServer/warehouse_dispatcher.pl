@@ -270,12 +270,12 @@ defrule([name: run_execute_action_1],
    ]
 ).
 
- /*defrule([name: run_execute_action_2],       %este dá Error in rule named run_execute_action_2 -> error(existence_error(procedure,ex/1),context(system:catch/3,_8086))
+ defrule([name: run_execute_action_2],       %este dá Error in rule named run_execute_action_2 -> error(existence_error(procedure,ex/1),context(system:catch/3,_8086))
    if ex(Action) then [
       retract(ex(Action)),
       do_execute(Action)
    ]
-).*/
+).
 
 do_execute(Action):-
     log_nl(executing____action(Action)),

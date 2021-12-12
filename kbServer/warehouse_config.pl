@@ -6,6 +6,9 @@
 :-dynamic all_current_states/1.
 :-dynamic all_previous_states/1.
 
+:-dynamic cell/2.
+:-dynamic recovering_mutex/0.
+
 :-dynamic plan/2.
 
 :-dynamic last_id/1.
@@ -19,6 +22,7 @@
 
 :-dynamic time_register/2.
 :-dynamic execute/1.
+:-dynamic ex/1.
 :-dynamic alert/5.
 :-dynamic failure/6.
 
@@ -51,8 +55,36 @@
 
 :- multifile aa/1.
 
+all_storage_states_sensors([
+    x_is_at(_X),     y_is_at(_Y),      z_is_at(_Z),
+    x_moving(_),     y_moving(_),      z_moving(_),
+    left_station_moving(_),
+    right_station_moving(_),
+    part_in_cage,
+    part_at_left_station,
+    part_at_right_station
+]).
 
-all_storage_states([
+all_storage_states(List):-
+     all_storage_states_sensors(States),
+     load_all_occupied_cells(Cells),
+     append(States, [x_between(_,_,_), y_between(_,_,_), z_between(_,_,_)], States2),
+     append(States2,Cells,ListT),
+     flatten(ListT,List).
+
+
+load_all_storage_states(List):-
+    all_storage_states(States),
+    findall( State, (
+                 member(State, States),
+                 State
+             ), List).
+
+load_all_occupied_cells(List):-
+    findall(cell(X,Z), cell(X,Z), List).
+
+
+/* all_storage_states([
     x_is_at(_X),     y_is_at(_Y),      z_is_at(_Z),
     x_moving(_),     y_moving(_),      z_moving(_),
     left_station_moving(_),
@@ -67,7 +99,7 @@ load_all_storage_states(List):-
     findall( State, (
                  member(State, States),
                  State
-             ), List).
+             ), List). */
 
 % each position represented by tuple
 % (X_Position, Port_Number,Bit_position, Bit_value)
