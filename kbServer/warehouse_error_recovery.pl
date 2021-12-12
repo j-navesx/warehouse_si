@@ -20,12 +20,12 @@ find_recovery_plan(ID, x_actuator_stopped_between, Plan):-
     retractall(plan(_, _)), %suspend all running plans
     RecoveryActions = [
         wait_until(not(recovering_mutex)), 
-        ex( assert(recovering_mutex)),
+        execute( assert(recovering_mutex)),
         move_x_left, 
         wait_until(x_is_at(_)), 
         stop_x,
-        ex(retract(recovering_mutex)), 
-        ex(change_failure_status(ID, resolved))
+        execute(retract(recovering_mutex)), 
+        execute(change_failure_status(ID, resolved))
     ],
     append(RecoveryActions, ListOfAllPlans, RecoveryPlan),
     Plan = plan(recover_x_actuator_stopped_between_failure, RecoveryPlan).
