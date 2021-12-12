@@ -204,7 +204,7 @@ defrule([name: wait_for_all_rule_empty_cond],
 
 defrule([name: run_plan_for_actions],
     if plan(Ref,[Action|ListOfActions]) and (Action\=wait_until(_))
-        and (Action\=wait_for_all(_)) and (Action\=parallel(_,_)) then [
+        and (Action\=wait_for_all(_)) and (Action\=subplan(_,_)) then [
        retract(plan(Ref,[Action|ListOfActions])),
        assert(plan(Ref,ListOfActions)),
        assert(Action),

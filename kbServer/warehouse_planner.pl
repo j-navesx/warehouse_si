@@ -82,7 +82,7 @@ strips([
 
 strips([
     act     [subplan(receive, [move_left_station_in, wait_until(part_at_left_station), stop_left_station])],
-    pre     [left_station_moving(0)],
+    pre     [],
     add     [part_at_left_station],
     del     []    
 ]).
