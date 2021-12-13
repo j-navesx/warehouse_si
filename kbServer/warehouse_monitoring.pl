@@ -643,28 +643,35 @@ if
 % Part not detected in cage sensor when receiving it from left station
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-/* defrule([name: part_not_in_cage_after_receive_rule],
+  defrule([name: part_not_in_cage_after_receive_rule_pre],
+if
+     z_is_at(1)       and  % z up 1.5
+     y_is_at(3)       and  % y no meio com o sensor a detetar a caixa                      
+       then [
+         execute(assert(tried_box)) 
+]).
+
+ defrule([name: part_not_in_cage_after_receive_rule],
 if
      x_is_at(1)       and
-     z_is_at(1.5)       and  % z up 1.5
+     z_is_at(1.5)     and  % z up 1.5
      y_is_at(2)       and  % y no meio com o sensor a detetar a caixa
+     tried_box        and
      not(part_in_cage) and %part in cage false -> not(false) -> true
-     x_moving(0) and
-     z_moving(0) and
-     y_moving(0) and
      not(cell(1,1)) and
      not(alert(_, _, part_in_cage_after_receive_failure, _, pending))                      
        then [
          generate_unique_id(ID),
          get_time(TS),
          assert(alert(ID, TS, part_in_cage_after_receive_failure, 'part in cage is missing after receiving it from left station', pending)),
-         diagnose(alert(ID, TS, part_in_cage_after_receive_failure, 'part in cage is missing after receiving it from left station', pending)) 
+         diagnose(alert(ID, TS, part_in_cage_after_receive_failure, 'part in cage is missing after receiving it from left station', pending)),
+         execute(retract(tried_box)) 
 ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Part not detected in cage sensor after removing it from cell
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+/* 
 defrule([name: part_not_in_cage_after_removing_from_cell_rule],
 if
      x_is_at(X)       and
