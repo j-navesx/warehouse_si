@@ -598,7 +598,9 @@ defrule([name: y_stopped_between_rule],
 if
      y_between(_,_,_) and          
      y_moving(0)       and
-     not(alert(_ID, _TS, y_actuator_stopped_between, _Descr, pending))                       
+     not(alert(_ID, _TS, y_actuator_stopped_between, _Descr, pending)) and
+     not(alert(_ID, _TS, y_limit_3, _Descr, pending))   and 
+     not(alert(_ID, _TS, y_limit_1, _Descr, pending))                            
        then [
          generate_unique_id(ID),
          get_time(TS),
@@ -610,7 +612,9 @@ defrule([name: z_stopped_between_rule],
 if
      z_between(_,_,_) and          
      z_moving(0)       and
-     not(alert(_ID, _TS, z_actuator_stopped_between, _Descr, pending))                       
+     not(alert(_ID, _TS, z_actuator_stopped_between, _Descr, pending))  and
+     not(alert(_ID, _TS, z_limit_5_5, _Descr, pending))   and 
+     not(alert(_ID, _TS, z_limit_1, _Descr, pending))                       
        then [
          generate_unique_id(ID),
          get_time(TS),

@@ -26,14 +26,32 @@
                             <td><button id="x-left" onclick="moveXClick(-1);" type="button" class="btn btn-success btn-sm btn-outline-primary py-0">x-Left</button></td>
                             <td><button id="x-stop" onclick="moveXClick( 0);" type="button" class="btn btn-warning btn-sm btn-outline-primary py-0">x-Stop</button></td>
                             <td><button id="x-right" onclick="moveXClick(+1);" type="button" class="btn btn-success btn-sm btn-outline-primary py-0">x-Right</button></td>
-                            <td><button id="x-left-step"  onclick="moveXStepClick(-1);" type="button" class="btn btn-success btn-sm btn-outline-primary py-0">x-Left-Step</button></td>
+                            <td><button id="x-left-step" onclick="moveXStepClick(-1);" type="button" class="btn btn-success btn-sm btn-outline-primary py-0">x-Left-Step</button></td>
                             <td><button id="x-right-step" onclick="moveXStepClick(+1);" type="button" class="btn btn-success btn-sm btn-outline-primary py-0">x-Right-Step</button></td>
                         </tr>
                         <tr>
+                            <td><button id="z-up" onclick="moveZClick(+1);" type="button" class="btn btn-success btn-sm btn-outline-primary py-0">z-Up</button></td>
+                            <td><button id="z-stop" onclick="moveZClick(0);"type="button" class="btn btn-warning btn-sm btn-outline-primary py-0">z-Stop</button></td>
+                            <td><button id="z-down" onclick="moveZClick(-1);" type="button" class="btn btn-success btn-sm btn-outline-primary py-0">z-Down</button></td>
                             <td><button id="z-up-step" onclick="moveZStepClick(+1);" type="button" class="btn btn-success btn-sm btn-outline-primary py-0">z-Up-Step</button></td>
                             <td><button id="z-down-step" onclick="moveZStepClick(-1);" type="button" class="btn btn-success btn-sm btn-outline-primary py-0">z-Down-Step</button></td>
+                        </tr>
+                        <tr>
+                            <td><button id="y-in" onclick="moveYClick(+1);" type="button" class="btn btn-success btn-sm btn-outline-primary py-0">y-In</button></td>
+                            <td><button id="y-stop" onclick="moveYClick(0);"type="button" class="btn btn-warning btn-sm btn-outline-primary py-0">y-Stop</button></td>
+                            <td><button id="y-out" onclick="moveYClick(-1);" type="button" class="btn btn-success btn-sm btn-outline-primary py-0">y-Out</button></td>
                             <td><button id="y-in-step" onclick="moveYStepClick(+1);" type="button" class="btn btn-success btn-sm btn-outline-primary py-0">y-In-Step</button></td>
                             <td><button id="y-out-step" onclick="moveYStepClick(-1);" type="button" class="btn btn-success btn-sm btn-outline-primary py-0">y-Out-Step</button></td>
+                        </tr>
+                        <tr>
+                            <td><button id="left-station-in" onclick="moveLeftStationClick(+1);" type="button" class="btn btn-success btn-sm btn-outline-primary py-0">left-station-In</button></td>
+                            <td><button id="left-station-stop" onclick="moveLeftStationClick(0);" type="button" class="btn btn-warning btn-sm btn-outline-primary py-0">left-station-Stop</button></td>
+                            <td><button id="left-station-out" onclick="moveLeftStationClick(-1);" type="button" class="btn btn-success btn-sm btn-outline-primary py-0">left-station-Out</button></td>
+                        </tr>
+                        <tr>
+                            <td><button id="right-station-in" onclick="moveRightStationClick(+1);" type="button" class="btn btn-success btn-sm btn-outline-primary py-0">right-station-In</button></td>
+                            <td><button id="right-station-stop" onclick="moveRightStationClick(0);" type="button" class="btn btn-warning btn-sm btn-outline-primary py-0">right-station-Stop</button></td>
+                            <td><button id="right-station-out" onclick="moveRightStationClick(-1);" type="button" class="btn btn-success btn-sm btn-outline-primary py-0">right-station-Out</button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -43,6 +61,42 @@
     <script>
         function moveXClick(direction) {
             var queryArray = ["move_x_left", "stop_x", "move_x_right"];
+            var query = "assert(" + queryArray[direction + 1] + ")";
+
+            ajax_post_request("/rtx_get", { "query": query }, function (result) {
+                console.log("query result = " + result.trim());
+            });
+        }
+
+        function moveZClick(direction) {
+            var queryArray = ["move_z_down", "stop_z", "move_z_up"];
+            var query = "assert(" + queryArray[direction + 1] + ")";
+
+            ajax_post_request("/rtx_get", { "query": query }, function (result) {
+                console.log("query result = " + result.trim());
+            });
+        }
+
+        function moveYClick(direction) {
+            var queryArray = ["move_y_out", "stop_y", "move_y_in"];
+            var query = "assert(" + queryArray[direction + 1] + ")";
+
+            ajax_post_request("/rtx_get", { "query": query }, function (result) {
+                console.log("query result = " + result.trim());
+            });
+        }
+
+        function moveLeftStationClick(direction) {
+            var queryArray = ["move_left_station_out", "stop_left_station", "move_left_station_in"];
+            var query = "assert(" + queryArray[direction + 1] + ")";
+
+            ajax_post_request("/rtx_get", { "query": query }, function (result) {
+                console.log("query result = " + result.trim());
+            });
+        }
+
+        function moveRightStationClick(direction) {
+            var queryArray = ["move_right_station_out", "stop_right_station", "move_right_station_in"];
             var query = "assert(" + queryArray[direction + 1] + ")";
 
             ajax_post_request("/rtx_get", { "query": query }, function (result) {
