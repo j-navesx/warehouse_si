@@ -160,3 +160,42 @@ diagnose(alert(_, _, z_limit_1, _, pending)):-
     atom_concat(Description, DetailedDescription, Explanation),
     find_recovery_plan(ID, z_limit_1, Plan),
     assert(failure(ID, TimeStamp, z_limit_1, Explanation, Plan, pending)).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Piece not in left station sensor when receiving it
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+diagnose(alert(_, _, part_left_station_failure, _, pending)):-
+    alert(ID, TimeStamp, part_left_station_failure, Description, pending),   
+    not(failure(_ID, _TS, part_left_station_failure, _Explanation, _Plan, pending)), %o stor tinha explantion, acho que foi gralha
+    %just for illustration, could be other causes:
+    DetailedDescription = 'Bad operation of the warehouse.',
+    atom_concat(Description, DetailedDescription, Explanation),
+    find_recovery_plan(ID, part_left_station_failure, Plan),
+    assert(failure(ID, TimeStamp, part_left_station_failure, Explanation, Plan, pending)).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Piece not detected in cage sensor when receiving it from left station
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+/* diagnose(alert(_, _, part_in_cage_after_receive_failure, _, pending)):-
+    alert(ID, TimeStamp, part_in_cage_after_receive_failure, Description, pending),   
+    not(failure(_ID, _TS, part_in_cage_after_receive_failure, _Explanation, _Plan, pending)), %o stor tinha explantion, acho que foi gralha
+    %just for illustration, could be other causes:
+    DetailedDescription = 'Bad operation of the warehouse.',
+    atom_concat(Description, DetailedDescription, Explanation),
+    find_recovery_plan(ID, part_in_cage_after_receive_failure, Plan),
+    assert(failure(ID, TimeStamp, part_in_cage_after_receive_failure, Explanation, Plan, pending)).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Part not detected in cage sensor after removing it from cell
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+diagnose(alert(_, _, part_in_cage_after_removing_cell_failure, _, pending)):-
+    alert(ID, TimeStamp, part_in_cage_after_removing_cell_failure, Description, pending),   
+    not(failure(_ID, _TS, part_in_cage_after_removing_cell_failure, _Explanation, _Plan, pending)), %o stor tinha explantion, acho que foi gralha
+    %just for illustration, could be other causes:
+    DetailedDescription = 'Bad operation of the warehouse.',
+    atom_concat(Description, DetailedDescription, Explanation),
+    find_recovery_plan(ID, part_in_cage_after_removing_cell_failure, Plan),
+    assert(failure(ID, TimeStamp, part_in_cage_after_removing_cell_failure, Explanation, Plan, pending)). */

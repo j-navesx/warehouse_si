@@ -293,6 +293,76 @@ find_recovery_plan(ID, z_limit_1, Plan):-
     append(RecoveryActions, ListOfAllPlans, RecoveryPlan),
     Plan = plan(recover_z1_failure, RecoveryPlan).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Piece not in left station sensor when receiving it
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+find_recovery_plan(ID, part_left_station_failure, Plan):-
+    %immediate action
+    assert(stop_z),
+
+    findall(subplan(Ref, List), plan(Ref, List), ListOfAllPlans),
+    retractall(plan(_, _)), %suspend all running plans
+    RecoveryActions = [
+        %wait_until(not(recovering_mutex)), 
+        %execute( assert(recovering_mutex)),
+/*         move_z_down, 
+        wait_until(z_is_at(_)), 
+        stop_z, */
+        move_y_in,
+        wait_until(y_between(_,_,_)),
+        wait_until(y_is_at(_)),
+        stop_y,
+        %execute(retract(recovering_mutex)), 
+        execute(change_failure_status(ID, resolved)) 
+    ],
+    append(RecoveryActions, ListOfAllPlans, RecoveryPlan),
+    Plan = plan(recover_part_left_station_failure, RecoveryPlan).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Piece not detected in cage sensor when receiving it from left station
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+/* find_recovery_plan(ID, part_in_cage_after_receive_failure, Plan):-
+    % no immediate action
+
+    findall(subplan(Ref, List), plan(Ref, List), ListOfAllPlans),
+    retractall(plan(_, _)), %suspend all running plans
+    RecoveryActions = [
+        %wait_until(not(recovering_mutex)), 
+        %execute( assert(recovering_mutex)),
+        move_z_down, 
+        wait_until(z_between(_,_,_)),  %reset cage to x,z = 1 and y = 2
+        wait_until(z_is_at(_)),
+        stop_z,
+        %execute(retract(recovering_mutex)), 
+        execute(change_failure_status(ID, resolved)) 
+    ],
+    append(RecoveryActions, ListOfAllPlans, RecoveryPlan),
+    Plan = plan(recover_part_in_cage_after_receive_failure, RecoveryPlan).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Part not detected in cage sensor after removing it from cell
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+find_recovery_plan(ID, part_in_cage_after_removing_cell_failure, Plan):-
+    % no immediate action
+
+    findall(subplan(Ref, List), plan(Ref, List), ListOfAllPlans),
+    retractall(plan(_, _)), %suspend all running plans
+    RecoveryActions = [
+        %wait_until(not(recovering_mutex)), 
+        %execute( assert(recovering_mutex)),
+        %move_z_down, 
+        %wait_until(z_between(_,_,_)),
+        %wait_until(z_is_at(_)),  %reset cage to x,z = 1 and y = 2
+        %stop_z,
+        %execute(retract(recovering_mutex)), 
+        execute(change_failure_status(ID, resolved)) 
+    ],
+    append(RecoveryActions, ListOfAllPlans, RecoveryPlan),
+    Plan = plan(recover_part_in_cage_after_removing_cell_failure, RecoveryPlan). */
+
 %%%%%%%%%%
 % Aula 8
 %%%%%%%%%%

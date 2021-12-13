@@ -574,8 +574,6 @@ if not(alert(_ID, _TStamp, z_limit_1, _Description, pending)) and
       diagnose(alert(ID, TS, z_limit_1, 'zz actuator moving beyond position z=1 going down', pending))
    ]).
 
-% //TODO Warehouse stopped between two positions (actuator broken?).
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %     Warehouse stopped between two positions (actuator broken?)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -584,9 +582,9 @@ defrule([name: x_stopped_between_rule],
 if
      x_between(_,_,_) and          
      x_moving(0)       and
-     not(alert(_ID, _TS, x_actuator_stopped_between, _Descr, pending)) and
-     not(alert(_ID, _TS, x_limit_10, _Descr, pending))   and 
-     not(alert(_ID, _TS, x_limit_1, _Descr, pending))                      
+     not(alert(_, _, x_actuator_stopped_between, _, pending)) and
+     not(alert(_, _, x_limit_10, _, pending))   and 
+     not(alert(_, _, x_limit_1, _, pending))                      
        then [
          generate_unique_id(ID),
          get_time(TS),
@@ -598,9 +596,9 @@ defrule([name: y_stopped_between_rule],
 if
      y_between(_,_,_) and          
      y_moving(0)       and
-     not(alert(_ID, _TS, y_actuator_stopped_between, _Descr, pending)) and
-     not(alert(_ID, _TS, y_limit_3, _Descr, pending))   and 
-     not(alert(_ID, _TS, y_limit_1, _Descr, pending))                            
+     not(alert(_, _, y_actuator_stopped_between, _, pending)) and
+     not(alert(_, _, y_limit_3, _, pending))   and 
+     not(alert(_, _, y_limit_1, _, pending))                            
        then [
          generate_unique_id(ID),
          get_time(TS),
@@ -612,12 +610,75 @@ defrule([name: z_stopped_between_rule],
 if
      z_between(_,_,_) and          
      z_moving(0)       and
-     not(alert(_ID, _TS, z_actuator_stopped_between, _Descr, pending))  and
-     not(alert(_ID, _TS, z_limit_5_5, _Descr, pending))   and 
-     not(alert(_ID, _TS, z_limit_1, _Descr, pending))                       
+     not(alert(_, _, z_actuator_stopped_between, _, pending))  and
+     not(alert(_, _, z_limit_5_5, _, pending))   and 
+     not(alert(_, _, z_limit_1, _, pending))                       
        then [
          generate_unique_id(ID),
          get_time(TS),
          assert(alert(ID, TS, z_actuator_stopped_between, 'zz actuator stopped between two positions', pending)),
          diagnose(alert(ID, TS, z_actuator_stopped_between, 'zz actuator stopped between two positions', pending)) 
 ]).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Part not in left station sensor when receiving it
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+defrule([name: part_not_in_left_station_rule],
+if
+     x_is_at(1)       and
+     z_is_at(1)       and  % no canto da left_station
+     y_is_at(1)       and  % y na ponta para tirar a caixa
+     z_moving(1)      and  %z a mover para cima para remover a caixa
+     not(part_at_left_station)  and  % caixa na left station não existe -> not(false)
+     not(alert(_, _, part_left_station_failure, _, pending))                      
+       then [
+         generate_unique_id(ID),
+         get_time(TS),
+         assert(alert(ID, TS, part_left_station_failure, 'part at left station is missing', pending)),
+         diagnose(alert(ID, TS, part_left_station_failure, 'part at left station is missing', pending)) 
+]).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Part not detected in cage sensor when receiving it from left station
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+/* defrule([name: part_not_in_cage_after_receive_rule],
+if
+     x_is_at(1)       and
+     z_is_at(1.5)       and  % z up 1.5
+     y_is_at(2)       and  % y no meio com o sensor a detetar a caixa
+     not(part_in_cage) and %part in cage false -> not(false) -> true
+     x_moving(0) and
+     z_moving(0) and
+     y_moving(0) and
+     not(cell(1,1)) and
+     not(alert(_, _, part_in_cage_after_receive_failure, _, pending))                      
+       then [
+         generate_unique_id(ID),
+         get_time(TS),
+         assert(alert(ID, TS, part_in_cage_after_receive_failure, 'part in cage is missing after receiving it from left station', pending)),
+         diagnose(alert(ID, TS, part_in_cage_after_receive_failure, 'part in cage is missing after receiving it from left station', pending)) 
+]).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Part not detected in cage sensor after removing it from cell
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+defrule([name: part_not_in_cage_after_removing_from_cell_rule],
+if
+     x_is_at(X)       and
+     z_is_at(Z)       and  % z up 1.5
+     y_is_at(3)       and  % y no meio com o sensor a detetar a caixa
+     z_moving(0) and       
+     x_moving(0) and
+     y_moving(0) and
+     not(cell(X,Z)) and    %part in cage false -> not(false) -> true
+     not(part_in_cage) and
+     not(alert(_, _, part_in_cage_after_removing_cell_failure, _, pending))                      
+       then [
+         generate_unique_id(ID),
+         get_time(TS),
+         assert(alert(ID, TS, part_in_cage_after_removing_cell_failure, 'part in cell is missing when removing it', pending)),
+         diagnose(alert(ID, TS, part_in_cage_after_removing_cell_failure, 'part in cell is missing after receiving it', pending)) 
+]). */
