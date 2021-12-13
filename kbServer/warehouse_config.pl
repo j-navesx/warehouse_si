@@ -20,7 +20,8 @@
 :-dynamic y_between/3.
 :-dynamic z_between/3.
 :-dynamic previous_state/2.
-
+:-dynamic tried_box/0.
+:-dynamic tried_box2/0.
 :-dynamic time_register/2.
 :-dynamic execute/1.
 :-dynamic ex/1.

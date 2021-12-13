@@ -645,10 +645,11 @@ if
 
   defrule([name: part_not_in_cage_after_receive_rule_pre],
 if
+     not(tried_box) and
      z_is_at(1)       and  % z up 1.5
-     y_is_at(3)       and  % y no meio com o sensor a detetar a caixa                      
+     y_is_at(1)         % y no meio com o sensor a detetar a caixa                      
        then [
-         execute(assert(tried_box)) 
+         assert(tried_box)
 ]).
 
  defrule([name: part_not_in_cage_after_receive_rule],
@@ -665,21 +666,29 @@ if
          get_time(TS),
          assert(alert(ID, TS, part_in_cage_after_receive_failure, 'part in cage is missing after receiving it from left station', pending)),
          diagnose(alert(ID, TS, part_in_cage_after_receive_failure, 'part in cage is missing after receiving it from left station', pending)),
-         execute(retract(tried_box)) 
+         retract(tried_box)
 ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Part not detected in cage sensor after removing it from cell
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-/* 
+
+defrule([name: part_not_in_cage_after_removing_from_cell_rule_pre],
+if
+     x_is_at(_)       and
+     z_is_at(_)       and
+     not(tried_box2) and
+     y_is_at(3)         % y no meio com o sensor a detetar a caixa                      
+       then [
+         assert(tried_box2)
+]).
+
 defrule([name: part_not_in_cage_after_removing_from_cell_rule],
 if
      x_is_at(X)       and
      z_is_at(Z)       and  % z up 1.5
-     y_is_at(3)       and  % y no meio com o sensor a detetar a caixa
-     z_moving(0) and       
-     x_moving(0) and
-     y_moving(0) and
+     y_is_at(2)       and  % y no meio com o sensor a detetar a caixa
+     tried_box2       and
      not(cell(X,Z)) and    %part in cage false -> not(false) -> true
      not(part_in_cage) and
      not(alert(_, _, part_in_cage_after_removing_cell_failure, _, pending))                      
@@ -687,5 +696,6 @@ if
          generate_unique_id(ID),
          get_time(TS),
          assert(alert(ID, TS, part_in_cage_after_removing_cell_failure, 'part in cell is missing when removing it', pending)),
-         diagnose(alert(ID, TS, part_in_cage_after_removing_cell_failure, 'part in cell is missing after receiving it', pending)) 
-]). */
+         diagnose(alert(ID, TS, part_in_cage_after_removing_cell_failure, 'part in cell is missing when removing it', pending)),
+         retract(tried_box2) 
+]).
