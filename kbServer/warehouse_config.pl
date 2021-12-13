@@ -7,6 +7,7 @@
 :-dynamic all_previous_states/1.
 
 :-dynamic cell/2.
+:-dynamic delivered/2.
 :-dynamic recovering_mutex/0.
 
 :-dynamic plan/2.

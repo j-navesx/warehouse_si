@@ -87,64 +87,65 @@ strips([
     del     []    
 ]).
 
+% Take box from left station
 strips([
-    act     [subplan(get_box, [
+    act     [
             wait_until(part_at_left_station), 
             wait_until(x_is_at(1)), 
             wait_until(y_is_at(2)), 
             wait_until(z_is_at(1)),
             move_y_out, wait_until(y_is_at(1)), stop_y,
             move_z_up, wait_until(z_is_at(1.5)), stop_z,
-            move_y_in, wait_until(y_is_at(2)), stop_y])],
+            move_y_in, wait_until(y_is_at(2)), stop_y],
     pre     [left_station_moving(0), part_at_left_station, x_is_at(1), z_is_at(1), y_is_at(2)],
     add     [part_in_cage],
     del     [part_at_left_station]    
 ]).
 
+% Put box in cell
 strips([
-    act     [subplan(place(X,Z), [
+    act     [
+            wait_until(part_in_cage),
+            wait_until(x_is_at(X)),
+            wait_until(z_is_at(Znext)),
             move_y_in, wait_until(y_is_at(3)), stop_y, 
-            move_z_down, wait_until(z_is_at(Znext)), stop_z,
-            move_y_out, wait_until(y_is_at(2)), stop_y])],
-    pre     [part_in_cage, x_is_at(X), z_is_at(Z)],
+            move_z_down, wait_until(z_is_at(Z)), stop_z,
+            move_y_out, wait_until(y_is_at(2)), stop_y, execute(assert(cell(X,Z)))],
+    pre     [part_in_cage, x_is_at(X), z_is_at(Znext)],
     add     [cell(X,Z)],
     del     []    
-]):- world(Wi, _Wf),
-     member(z_is_at(Z),Wi), 
-     Znext is Z - 0.5.
+]):- Znext is Z + 0.5.
 
-
+% Take box from cell
 strips([
-    act     [subplan(remove(X,Z), [
+    act     [
+            wait_until(cell(X,Z)),
+            wait_until(x_is_at(X)),
+            wait_until(z_is_at(Z)),
             move_y_in, wait_until(y_is_at(3)), stop_y,
-            move_z_up, wait_until(z_is_at(Z)), stop_z,
-            move_y_out, wait_until(y_is_at(2)), stop_y])],
-    pre     [cell(X,Z), x_is_at(X), z_is_at(Znext)],
-    add     [part_in_cage],
+            move_z_up, wait_until(z_is_at(Znext)), stop_z,
+            move_y_out, wait_until(y_is_at(2)), stop_y, execute(retract(cell(X,Z)))],
+    pre     [cell(X,Z), x_is_at(X), z_is_at(Z)],
+    add     [part_in_cage, delivered(X,Z)],
     del     [cell(X,Z)]    
-]):- world(Wi, _Wf),
-     member(z_is_at(Z),Wi),
-     Znext is Z - 0.5.
+]):- Znext is Z + 0.5.
 
+% Put box in right station
 strips([
-    act     [subplan(deliver_box, [
+    act     [
+            wait_until(part_in_cage),
+            wait_until(x_is_at(10)),
+            wait_until(z_is_at(1.5)),
             move_y_out, wait_until(y_is_at(1)), stop_y,
             move_z_down, wait_until(z_is_at(1)), stop_z,
-            move_y_in, wait_until(y_is_at(2)), stop_y])],
+            move_y_in, wait_until(y_is_at(2)), stop_y],
     pre     [part_in_cage, x_is_at(10), z_is_at(1.5)],
     add     [part_at_right_station],
     del     [part_in_cage]    
 ]).
 strips([
     act     [subplan(deliver, [move_right_station_out, sleep(1), stop_right_station])],
-    pre     [right_station_moving(0)],
-    add     [],
+    pre     [right_station_moving(0), part_at_right_station],
+    add     [empty_right_station],
     del     [part_at_right_station]    
-]).
-
-strips([
-    act     [xpto],
-    pre     [part_at_left_station, cell(X,Z)],
-    add     [colocar(X,Z)],
-    del     [part_at_left_station] 
 ]).
